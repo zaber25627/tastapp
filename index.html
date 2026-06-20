@@ -1476,7 +1476,7 @@ body::after {
           <h4>উত্তোলনের জন্য রেফার প্রয়োজন</h4>
           <p>উত্তোলন করার আগে রেফার সম্পন্ন করুন।</p>
           <div class="ref-progress-bar-wrap"><div class="ref-progress-bar-fill" id="refProgressFill" style="width:0%;"></div></div>
-          <div class="ref-count-label" id="refCountLabel">0 / 5 রেফার সম্পন্ন</div>
+          <div class="ref-count-label" id="refCountLabel">0 / 2 রেফার সম্পন্ন</div>
         </div>
       </div>
       <button class="btn-primary" style="background:var(--grad-blue);margin-top:12px;" onclick="switchTab('referral', document.querySelectorAll('.nav-item-wrap')[4])">
@@ -1613,8 +1613,16 @@ body::after {
 /* ════════════════════════════════════════════════════════════
    FIREBASE + TELEGRAM INIT
 ════════════════════════════════════════════════════════════ */
-const firebaseConfig={apiKey:"AIzaSyADW6696ieJhGsPFoERC0-WJYBejqu2Jc4",authDomain:"taskhive-3db22.firebaseapp.com",projectId:"taskhive-3db22",storageBucket:"taskhive-3db22.firebasestorage.app",messagingSenderId:"621508337333",appId:"1:621508337333:web:3ccf6ee00c4eaa9ae028fc"};
-firebase.initializeApp(firebaseConfig);
+const firebaseConfig = {
+  apiKey: "AIzaSyDt04iL7NB13_WHxKFCpIPJGd4X41SkY30",
+  authDomain: "pro-vice.firebaseapp.com",
+  databaseURL: "https://pro-vice-default-rtdb.firebaseio.com",
+  projectId: "pro-vice",
+  storageBucket: "pro-vice.firebasestorage.app",
+  messagingSenderId: "676273552242",
+  appId: "1:676273552242:web:e5eb9980a24ab63558bbeb"
+  };
+  firebase.initializeApp(firebaseConfig);
 const db=firebase.database();
 const tg=window.Telegram.WebApp;
 if(tg){try{tg.ready();tg.expand();}catch(e){}}
