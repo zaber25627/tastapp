@@ -222,39 +222,132 @@ body::after {
 .wd-confirm-ok { flex:2;padding:13px;background:var(--grad-primary);border:none;border-radius:var(--radius-md);color:#fff;font-weight:800;font-size:.85rem;cursor:pointer;box-shadow:0 8px 22px rgba(108,92,231,0.35); }
 
 /* ════════════════════════════════════════
-   SELL MODALS
+   ADVANCED NOTIFICATION SYSTEM
 ════════════════════════════════════════ */
-.sell-modal-overlay { position:fixed;inset:0;z-index:7777;background:rgba(10,10,26,0.7);backdrop-filter:blur(16px);display:none;align-items:flex-end;justify-content:center; }
-.sell-modal-overlay.show { display:flex; }
-.sell-modal-card { background:var(--bg-secondary);border-radius:var(--radius-xl) var(--radius-xl) 0 0;padding:24px 20px 36px;width:100%;max-width:480px;animation:slideUp .32s cubic-bezier(.2,.8,.4,1);box-shadow:0 -10px 40px rgba(0,0,0,0.4);border-top:1px solid var(--glass-border-strong); }
-@keyframes slideUp { from{transform:translateY(100%)} to{transform:translateY(0)} }
-.sell-modal-title { font-size:1.04rem;font-weight:800;color:var(--text-primary);margin-bottom:4px;display:flex;align-items:center;gap:9px; }
-.sell-modal-sub { font-size:.76rem;color:var(--text-secondary);font-weight:500;margin-bottom:16px;line-height:1.55; }
-.sell-modal-price { background:rgba(108,92,231,0.06);border:1px solid rgba(108,92,231,0.15);border-radius:var(--radius-md);padding:13px;text-align:center;margin-bottom:14px;font-size:.8rem;font-weight:600;color:var(--text-secondary); }
-.sell-modal-price .currency { font-size:1.15rem;font-weight:800;color:var(--primary-light); }
-.sell-modal-price small { display:block;font-size:.68rem;margin-top:3px; }
-.sell-modal-input { width:100%;padding:13px 15px;border:1px solid var(--glass-border);border-radius:var(--radius-sm);font-size:.88rem;font-weight:600;color:var(--text-primary);background:var(--glass);outline:none;margin-bottom:10px;transition:.2s; }
-.sell-modal-input::placeholder { color:var(--text-muted); }
-.sell-modal-input:focus { border-color:var(--primary);box-shadow:0 0 0 3px rgba(108,92,231,0.12); }
-.sell-modal-btns { display:flex;gap:10px;margin-top:8px; }
-.sell-modal-cancel { flex:1;padding:14px;background:var(--glass);border:1px solid var(--glass-border);border-radius:var(--radius-md);font-weight:700;font-size:.85rem;cursor:pointer;color:var(--text-secondary); }
-.sell-modal-submit { flex:2;padding:14px;background:var(--grad-primary);border:none;border-radius:var(--radius-md);color:#fff;font-weight:800;font-size:.85rem;cursor:pointer;box-shadow:0 8px 20px rgba(108,92,231,0.3);display:flex;align-items:center;justify-content:center;gap:7px; }
+.notif-stack {
+  position:fixed;top:0;left:0;right:0;z-index:99999;
+  display:flex;flex-direction:column;align-items:center;
+  padding:12px 14px 0;pointer-events:none;gap:8px;
+}
+.premium-notif {
+  width:100%;max-width:420px;
+  border-radius:16px;
+  padding:0;overflow:hidden;
+  pointer-events:auto;
+  animation:premNotifIn .45s cubic-bezier(.2,.8,.3,1) both;
+  box-shadow:0 12px 40px rgba(0,0,0,0.45),0 0 0 1px rgba(255,255,255,0.06);
+  backdrop-filter:blur(24px);
+  position:relative;
+  cursor:pointer;
+  transform-origin:top center;
+}
+.premium-notif.removing {
+  animation:premNotifOut .35s cubic-bezier(.4,0,1,1) forwards;
+}
+@keyframes premNotifIn {
+  0% { opacity:0;transform:translateY(-30px) scale(0.92); }
+  100% { opacity:1;transform:translateY(0) scale(1); }
+}
+@keyframes premNotifOut {
+  0% { opacity:1;transform:translateY(0) scale(1); }
+  100% { opacity:0;transform:translateY(-20px) scale(0.92); }
+}
+
+.premium-notif .pn-progress {
+  position:absolute;bottom:0;left:0;height:3px;border-radius:0 0 16px 16px;
+  animation:pnProgress linear forwards;
+}
+@keyframes pnProgress { from{width:100%;} to{width:0%;} }
+
+.premium-notif .pn-inner {
+  display:flex;align-items:flex-start;gap:12px;padding:14px 16px;position:relative;z-index:1;
+}
+.premium-notif .pn-icon-wrap {
+  width:40px;height:40px;border-radius:12px;
+  display:flex;align-items:center;justify-content:center;
+  font-size:1.05rem;flex-shrink:0;
+  position:relative;
+}
+.premium-notif .pn-icon-wrap::after {
+  content:"";position:absolute;inset:-2px;border-radius:14px;opacity:.35;
+}
+.premium-notif .pn-body { flex:1;min-width:0; }
+.premium-notif .pn-title {
+  font-size:.82rem;font-weight:800;line-height:1.25;margin-bottom:2px;
+  font-family:'Sora','Plus Jakarta Sans',sans-serif;
+}
+.premium-notif .pn-msg {
+  font-size:.72rem;font-weight:600;line-height:1.45;opacity:.75;
+}
+.premium-notif .pn-close {
+  width:26px;height:26px;border-radius:8px;
+  display:flex;align-items:center;justify-content:center;
+  font-size:.65rem;cursor:pointer;flex-shrink:0;
+  background:rgba(255,255,255,0.06);color:rgba(255,255,255,0.4);
+  border:none;transition:.15s;margin-top:1px;
+}
+.premium-notif .pn-close:hover { background:rgba(255,255,255,0.12);color:#fff; }
+
+/* Success Notif */
+.premium-notif.pn-success {
+  background:linear-gradient(135deg,rgba(0,210,211,0.12) 0%,rgba(10,10,26,0.95) 100%);
+  border-left:3px solid var(--accent);
+}
+.premium-notif.pn-success .pn-icon-wrap { background:rgba(0,210,211,0.15);color:var(--accent); }
+.premium-notif.pn-success .pn-icon-wrap::after { border:1px solid rgba(0,210,211,0.3); }
+.premium-notif.pn-success .pn-title { color:var(--accent); }
+.premium-notif.pn-success .pn-msg { color:rgba(255,255,255,0.6); }
+.premium-notif.pn-success .pn-progress { background:var(--grad-accent); }
+
+/* Error Notif */
+.premium-notif.pn-error {
+  background:linear-gradient(135deg,rgba(255,107,107,0.12) 0%,rgba(10,10,26,0.95) 100%);
+  border-left:3px solid var(--danger);
+}
+.premium-notif.pn-error .pn-icon-wrap { background:rgba(255,107,107,0.15);color:var(--danger); }
+.premium-notif.pn-error .pn-icon-wrap::after { border:1px solid rgba(255,107,107,0.3); }
+.premium-notif.pn-error .pn-title { color:var(--danger); }
+.premium-notif.pn-error .pn-msg { color:rgba(255,255,255,0.6); }
+.premium-notif.pn-error .pn-progress { background:var(--grad-warm); }
+
+/* Warning Notif */
+.premium-notif.pn-warning {
+  background:linear-gradient(135deg,rgba(254,202,87,0.12) 0%,rgba(10,10,26,0.95) 100%);
+  border-left:3px solid var(--warn);
+}
+.premium-notif.pn-warning .pn-icon-wrap { background:rgba(254,202,87,0.15);color:var(--warn); }
+.premium-notif.pn-warning .pn-icon-wrap::after { border:1px solid rgba(254,202,87,0.3); }
+.premium-notif.pn-warning .pn-title { color:var(--warn); }
+.premium-notif.pn-warning .pn-msg { color:rgba(255,255,255,0.6); }
+.premium-notif.pn-warning .pn-progress { background:var(--grad-gold); }
+
+/* Info Notif */
+.premium-notif.pn-info {
+  background:linear-gradient(135deg,rgba(84,160,255,0.12) 0%,rgba(10,10,26,0.95) 100%);
+  border-left:3px solid var(--info);
+}
+.premium-notif.pn-info .pn-icon-wrap { background:rgba(84,160,255,0.15);color:var(--info); }
+.premium-notif.pn-info .pn-icon-wrap::after { border:1px solid rgba(84,160,255,0.3); }
+.premium-notif.pn-info .pn-title { color:var(--info); }
+.premium-notif.pn-info .pn-msg { color:rgba(255,255,255,0.6); }
+.premium-notif.pn-info .pn-progress { background:var(--grad-blue); }
 
 /* ════════════════════════════════════════
-   TOAST
+   TOAST (kept as fallback, hidden by default now)
 ════════════════════════════════════════ */
 .toast {
   position:fixed;top:20px;left:50%;transform:translateX(-50%) translateY(-20px);
   background:rgba(18,18,42,0.95);backdrop-filter:blur(20px);
   color:#fff;padding:12px 22px;border-radius:99px;font-size:.82rem;
-  opacity:0;pointer-events:none;transition:.3s;z-index:99999;
+  opacity:0;pointer-events:none;transition:.3s;z-index:99998;
   font-weight:700;max-width:320px;text-align:center;
   border:1px solid var(--glass-border-strong);box-shadow:var(--shadow-md);
+  display:none;
 }
-.toast.show { opacity:1;transform:translateX(-50%) translateY(0); }
+.toast.show { opacity:1;transform:translateX(-50%) translateY(0);display:block; }
 
 /* ════════════════════════════════════════
-   NOTIFICATION OVERLAYS
+   NOTIFICATION OVERLAYS (status notif)
 ════════════════════════════════════════ */
 .notif-overlay { position:fixed;inset:0;z-index:9500;display:none;align-items:center;justify-content:center;padding:18px;background:rgba(10,10,26,0.7);backdrop-filter:blur(16px); }
 .notif-overlay.show { display:flex; }
@@ -519,6 +612,63 @@ body::after {
 }
 
 /* ════════════════════════════════════════
+   HOME - TOP LEADERBOARD MINI SECTION
+════════════════════════════════════════ */
+.home-leaderboard-mini {
+  margin:0 14px 12px;
+  background:var(--glass);backdrop-filter:blur(16px);
+  border-radius:var(--radius-lg);
+  border:1px solid var(--glass-border);
+  overflow:hidden;box-shadow:var(--shadow-sm);
+  position:relative;
+}
+.home-leaderboard-mini::before { content:"";position:absolute;top:0;left:0;right:0;height:3px;background:var(--grad-gold);opacity:.7; }
+.home-lb-header {
+  display:flex;align-items:center;justify-content:space-between;
+  padding:14px 16px 10px;
+}
+.home-lb-header h4 {
+  font-size:.86rem;font-weight:800;color:var(--text-primary);
+  display:flex;align-items:center;gap:7px;
+}
+.home-lb-header h4 i { color:var(--warn); }
+.home-lb-view-all {
+  font-size:.68rem;font-weight:800;color:var(--primary-light);
+  cursor:pointer;display:flex;align-items:center;gap:4px;
+  background:rgba(108,92,231,0.1);padding:5px 10px;border-radius:99px;
+  border:1px solid rgba(108,92,231,0.2);
+}
+.home-lb-view-all:active { transform:scale(.95); }
+.home-lb-list { padding:0 12px 12px;display:flex;flex-direction:column;gap:6px; }
+.home-lb-item {
+  display:flex;align-items:center;gap:10px;
+  padding:10px 12px;border-radius:var(--radius-sm);
+  background:rgba(255,255,255,0.02);
+  border:1px solid rgba(255,255,255,0.04);
+  transition:.15s;
+}
+.home-lb-item:nth-child(1) { border-color:rgba(254,202,87,0.2);background:rgba(254,202,87,0.04); }
+.home-lb-item:nth-child(2) { border-color:rgba(212,219,232,0.15);background:rgba(212,219,232,0.03); }
+.home-lb-item:nth-child(3) { border-color:rgba(229,152,102,0.15);background:rgba(229,152,102,0.03); }
+.home-lb-rank {
+  width:26px;height:26px;border-radius:50%;
+  display:flex;align-items:center;justify-content:center;
+  font-size:.65rem;font-weight:800;color:#fff;flex-shrink:0;
+}
+.home-lb-item:nth-child(1) .home-lb-rank { background:var(--grad-gold); }
+.home-lb-item:nth-child(2) .home-lb-rank { background:linear-gradient(135deg,#C0C7D4,#8b93a3); }
+.home-lb-item:nth-child(3) .home-lb-rank { background:linear-gradient(135deg,#E59866,#b86b35); }
+.home-lb-item:nth-child(n+4) .home-lb-rank { background:var(--grad-primary); }
+.home-lb-img {
+  width:34px;height:34px;border-radius:10px;object-fit:cover;
+  border:2px solid rgba(255,255,255,0.1);flex-shrink:0;
+}
+.home-lb-info { flex:1;min-width:0; }
+.home-lb-name { font-size:.78rem;font-weight:800;color:var(--text-primary);white-space:nowrap;overflow:hidden;text-overflow:ellipsis; }
+.home-lb-earn { font-size:.66rem;font-weight:700;color:var(--text-muted);margin-top:1px; }
+.home-lb-bal { font-size:.8rem;font-weight:800;color:var(--primary-light);white-space:nowrap; }
+
+/* ════════════════════════════════════════
    TASKS PAGE
 ════════════════════════════════════════ */
 .task-page-header {
@@ -700,6 +850,21 @@ body::after {
 .giveaway-hero h2 { font-size:1.3rem;font-weight:800;color:#fff;position:relative;z-index:1; }
 .giveaway-hero p { font-size:.78rem;color:rgba(255,255,255,0.8);font-weight:600;position:relative;z-index:1;margin-top:4px; }
 
+/* All Results Button */
+.giveaway-all-results-btn {
+  display:flex;align-items:center;justify-content:center;gap:8px;
+  margin:0 14px 12px;padding:13px;
+  background:linear-gradient(135deg,rgba(108,92,231,0.12),rgba(162,155,254,0.06));
+  border:1px solid rgba(108,92,231,0.25);
+  border-radius:var(--radius-md);
+  font-weight:800;font-size:.86rem;
+  cursor:pointer;color:var(--primary-light);
+  transition:.2s;
+}
+.giveaway-all-results-btn:active { transform:scale(.97); }
+.giveaway-all-results-btn:hover { background:linear-gradient(135deg,rgba(108,92,231,0.18),rgba(162,155,254,0.1)); }
+.giveaway-all-results-btn i { font-size:.9rem; }
+
 .giveaway-list { padding:10px 14px;display:flex;flex-direction:column;gap:12px; }
 .giveaway-card {
   background:var(--glass);backdrop-filter:blur(16px);border-radius:var(--radius-lg);
@@ -747,11 +912,116 @@ body::after {
 .giveaway-join-btn.joined { background:rgba(0,210,211,0.15);color:var(--accent);box-shadow:none; }
 .giveaway-join-btn.ended { background:var(--glass);color:var(--text-muted);box-shadow:none;cursor:default; }
 
+.giveaway-winner-btn {
+  width:100%;padding:12px;margin-top:8px;
+  background:rgba(254,202,87,0.08);border:1px solid rgba(254,202,87,0.25);
+  border-radius:var(--radius-md);font-weight:800;font-size:.84rem;
+  cursor:pointer;color:var(--warn);
+  display:flex;align-items:center;justify-content:center;gap:8px;
+  transition:.2s;
+}
+.giveaway-winner-btn:active { transform:scale(.97); }
+.giveaway-winner-btn:hover { background:rgba(254,202,87,0.12); }
+
 .giveaway-empty {
   text-align:center;padding:40px 14px;color:var(--text-muted);
 }
 .giveaway-empty i { font-size:2rem;opacity:.3;display:block;margin-bottom:10px; }
 .giveaway-empty p { font-size:.82rem;font-weight:600; }
+
+/* Giveaway Status Badge */
+.giveaway-status-badge {
+  display:inline-flex;align-items:center;gap:5px;
+  padding:4px 11px;border-radius:99px;
+  font-size:.62rem;font-weight:800;letter-spacing:.3px;
+  margin-bottom:10px;
+}
+.giveaway-status-badge.gsb-running { background:rgba(0,210,211,0.12);color:var(--accent);border:1px solid rgba(0,210,211,0.25); }
+.giveaway-status-badge.gsb-ended { background:rgba(255,107,107,0.10);color:var(--danger);border:1px solid rgba(255,107,107,0.2); }
+.giveaway-status-badge.gsb-won { background:rgba(254,202,87,0.12);color:var(--warn);border:1px solid rgba(254,202,87,0.25); }
+.giveaway-status-badge.gsb-lost { background:rgba(255,107,107,0.10);color:var(--danger);border:1px solid rgba(255,107,107,0.2); }
+.giveaway-status-badge.gsb-waiting { background:rgba(84,160,255,0.10);color:var(--info);border:1px solid rgba(84,160,255,0.2); }
+
+/* Winner Results Modal */
+.winner-modal { position:fixed;inset:0;z-index:8600;display:none;align-items:center;justify-content:center;padding:18px;background:rgba(10,10,26,0.8);backdrop-filter:blur(20px); }
+.winner-modal.show { display:flex; }
+.winner-modal-card {
+  background:var(--bg-secondary);border-radius:var(--radius-xl);padding:24px;
+  width:100%;max-width:380px;animation:modalPop .3s ease;
+  box-shadow:var(--shadow-lg);border:1px solid rgba(254,202,87,0.2);
+  text-align:center;position:relative;overflow:hidden;
+  max-height:85vh;overflow-y:auto;
+}
+.winner-modal-card::-webkit-scrollbar { width:3px; }
+.winner-modal-card::-webkit-scrollbar-thumb { background:rgba(108,92,231,0.3);border-radius:99px; }
+.winner-modal-card::before { content:"";position:absolute;top:0;left:0;right:0;height:3px;background:var(--grad-gold);opacity:.8; }
+.winner-modal-glow { position:absolute;top:-30px;left:50%;transform:translateX(-50%);width:180px;height:180px;border-radius:50%;background:radial-gradient(circle,rgba(254,202,87,0.15),transparent);pointer-events:none; }
+.winner-list-item {
+  display:flex;align-items:center;justify-content:space-between;
+  padding:12px 14px;margin-bottom:8px;
+  background:var(--glass);border:1px solid var(--glass-border);
+  border-radius:var(--radius-md);text-align:left;
+}
+.winner-list-item .winner-rank { width:28px;height:28px;border-radius:50%;background:var(--grad-gold);display:flex;align-items:center;justify-content:center;font-size:.7rem;font-weight:800;color:#3a2400;flex-shrink:0; }
+.winner-list-item .winner-name { flex:1;margin-left:10px;font-size:.82rem;font-weight:800;color:var(--text-primary); }
+.winner-list-item .winner-prize { font-size:.78rem;font-weight:800;color:var(--warn); }
+
+/* ═══════ All Results Modal ═══════ */
+.all-results-modal { position:fixed;inset:0;z-index:8600;display:none;align-items:center;justify-content:center;padding:14px;background:rgba(10,10,26,0.8);backdrop-filter:blur(20px); }
+.all-results-modal.show { display:flex; }
+.all-results-card {
+  background:var(--bg-secondary);border-radius:var(--radius-xl);padding:22px 18px;
+  width:100%;max-width:400px;animation:modalPop .3s ease;
+  box-shadow:var(--shadow-lg);border:1px solid rgba(108,92,231,0.2);
+  position:relative;overflow:hidden;max-height:85vh;display:flex;flex-direction:column;
+}
+.all-results-card::before { content:"";position:absolute;top:0;left:0;right:0;height:3px;background:var(--grad-primary);opacity:.8; }
+.all-results-header { text-align:center;margin-bottom:16px;position:relative;z-index:1;flex-shrink:0; }
+.all-results-header h3 { font-size:1.05rem;font-weight:800;color:#fff;margin-bottom:3px; }
+.all-results-header p { font-size:.72rem;color:var(--text-secondary); }
+.all-results-scroll { overflow-y:auto;flex:1;padding-right:2px; }
+.all-results-scroll::-webkit-scrollbar { width:3px; }
+.all-results-scroll::-webkit-scrollbar-thumb { background:rgba(108,92,231,0.3);border-radius:99px; }
+
+.ar-item {
+  background:var(--glass);border:1px solid var(--glass-border);
+  border-radius:var(--radius-md);padding:14px;margin-bottom:10px;
+  position:relative;overflow:hidden;
+}
+.ar-item::before { content:"";position:absolute;left:0;top:0;bottom:0;width:3px; }
+.ar-item.ar-won::before { background:var(--grad-accent); }
+.ar-item.ar-lost::before { background:var(--grad-warm); }
+.ar-item.ar-waiting::before { background:var(--grad-gold); }
+
+.ar-top-row { display:flex;align-items:center;justify-content:space-between;gap:8px;margin-bottom:10px; }
+.ar-title { font-size:.84rem;font-weight:800;color:var(--text-primary);flex:1;text-align:left; }
+
+.ar-status-badge {
+  display:inline-flex;align-items:center;gap:5px;
+  padding:4px 11px;border-radius:99px;
+  font-size:.62rem;font-weight:800;letter-spacing:.4px;
+  white-space:nowrap;flex-shrink:0;
+}
+.ar-status-badge.badge-won {
+  background:rgba(0,210,211,0.12);color:var(--accent);border:1px solid rgba(0,210,211,0.25);
+}
+.ar-status-badge.badge-lost {
+  background:rgba(255,107,107,0.10);color:var(--danger);border:1px solid rgba(255,107,107,0.2);
+}
+.ar-status-badge.badge-waiting {
+  background:rgba(254,202,87,0.10);color:var(--warn);border:1px solid rgba(254,202,87,0.2);
+}
+
+.ar-details { display:grid;grid-template-columns:1fr 1fr;gap:6px 12px; }
+.ar-detail-item { display:flex;flex-direction:column;gap:1px; }
+.ar-detail-label { font-size:.58rem;font-weight:700;color:var(--text-muted);text-transform:uppercase;letter-spacing:.4px; }
+.ar-detail-val { font-size:.76rem;font-weight:800;color:var(--text-primary); }
+.ar-detail-val.val-accent { color:var(--accent); }
+.ar-detail-val.val-warn { color:var(--warn); }
+
+.ar-empty { text-align:center;padding:30px 10px;color:var(--text-muted); }
+.ar-empty i { font-size:1.6rem;opacity:.3;display:block;margin-bottom:8px; }
+.ar-empty p { font-size:.8rem;font-weight:600; }
 
 /* ════════════════════════════════════════
    REFERRAL PAGE
@@ -857,40 +1127,6 @@ body::after {
 .leader-right-ref { font-size:.68rem;font-weight:700;color:var(--text-muted); }
 
 /* ════════════════════════════════════════
-   SELL PAGE
-════════════════════════════════════════ */
-.sell-header-banner {
-  background:linear-gradient(140deg,#4834D4,#6C5CE7,#A29BFE);
-  padding:22px 18px;margin:14px;border-radius:var(--radius-xl);position:relative;overflow:hidden;
-  box-shadow:0 14px 36px rgba(108,92,231,0.35);border:1px solid rgba(255,255,255,0.14);
-}
-.sell-header-banner::before { content:"";position:absolute;top:-25px;right:-25px;width:120px;height:120px;border-radius:50%;background:rgba(255,255,255,0.1); }
-.sell-header-banner h2 { font-size:1.15rem;font-weight:800;color:#fff;margin-bottom:4px;display:flex;align-items:center;gap:8px;position:relative;z-index:1; }
-.sell-header-banner p { font-size:.76rem;color:rgba(255,255,255,0.7);font-weight:600;position:relative;z-index:1; }
-.sell-grid { display:grid;grid-template-columns:1fr 1fr;gap:11px;padding:4px 14px 12px; }
-.sell-card {
-  background:var(--glass);backdrop-filter:blur(16px);border-radius:var(--radius-lg);
-  padding:16px 10px;border:1px solid var(--glass-border);cursor:pointer;
-  transition:.2s;text-align:center;box-shadow:var(--shadow-sm);
-  position:relative;overflow:hidden;
-}
-.sell-card::before { content:"";position:absolute;top:0;left:0;right:0;height:3px;background:var(--grad-rainbow);opacity:.6; }
-.sell-card:active { transform:scale(.95); }
-.sell-card.closed { opacity:.4;cursor:not-allowed; }
-.sell-card-icon { width:56px;height:56px;border-radius:18px;display:flex;align-items:center;justify-content:center;font-size:1.4rem;margin:0 auto 10px;box-shadow:0 8px 20px rgba(0,0,0,0.25); }
-.sell-card h4 { font-size:.8rem;font-weight:800;color:var(--text-primary);margin-bottom:5px; }
-.sell-price { font-size:.78rem;font-weight:800;color:var(--primary-light);background:rgba(108,92,231,0.1);border-radius:99px;padding:3px 10px;margin:4px auto 7px;display:inline-block; }
-.sell-status { font-size:.66rem;font-weight:800;padding:3px 10px;border-radius:99px;display:inline-block; }
-.sell-status.on { background:rgba(0,210,211,0.1);color:var(--accent); }
-.sell-status.off { background:rgba(255,107,107,0.1);color:var(--danger); }
-.logo-gmail { background:linear-gradient(135deg,rgba(234,67,53,0.15),rgba(255,186,183,0.08)); }
-.logo-instagram { background:linear-gradient(135deg,#833ab4,#fd1d1d,#fcb045); }
-.logo-facebook { background:linear-gradient(135deg,rgba(24,119,242,0.2),rgba(66,165,255,0.1)); }
-.logo-tiktok { background:linear-gradient(135deg,#0a0a18,#1a1a2e); }
-.logo-telegram { background:linear-gradient(135deg,rgba(36,161,222,0.2),rgba(116,185,255,0.12)); }
-.logo-whatsapp { background:linear-gradient(135deg,rgba(37,211,102,0.18),rgba(18,140,126,0.1)); }
-
-/* ════════════════════════════════════════
    WITHDRAW PAGE
 ════════════════════════════════════════ */
 .wd-notice-card {
@@ -920,7 +1156,7 @@ body::after {
 .fee-row.final b { color:var(--accent);font-size:1rem;font-weight:800; }
 .fee-row.charge b { color:var(--danger); }
 
-/* WD History */
+/* WD History - IMPROVED */
 .wdh-tabs { display:flex;padding:0 14px;gap:6px;margin-bottom:10px; }
 .wdh-tab { flex:1;text-align:center;padding:9px 5px;border-radius:var(--radius-sm);background:var(--glass);font-size:.68rem;font-weight:800;color:var(--text-muted);cursor:pointer;border:1px solid var(--glass-border);transition:.2s; }
 .wdh-tab.active { border-color:var(--primary);color:#fff;background:rgba(108,92,231,0.12); }
@@ -945,15 +1181,34 @@ body::after {
 .wdh-status.pending { background:rgba(254,202,87,0.12);color:var(--warn); }
 .wdh-status.approved { background:rgba(0,210,211,0.12);color:var(--accent); }
 .wdh-status.rejected { background:rgba(255,107,107,0.1);color:var(--danger); }
-.wdh-breakdown { background:rgba(255,255,255,0.015);border-top:1px solid var(--glass-border);padding:10px 15px; }
-.wdh-brow { display:flex;justify-content:space-between;align-items:center;padding:2px 0;font-size:.72rem; }
-.wdh-brow span { color:var(--text-muted);font-weight:600; }
-.wdh-brow b { color:var(--text-primary);font-weight:800; }
-.wdh-brow.charge b { color:var(--danger); }
-.wdh-brow.final { margin-top:5px;padding-top:7px;border-top:1px dashed var(--glass-border); }
-.wdh-brow.final span { color:var(--accent);font-weight:800; }
-.wdh-brow.final b { color:var(--accent);font-weight:800;font-size:.86rem; }
-.wdh-time { font-size:.64rem;color:rgba(162,155,254,0.5);font-weight:600;text-align:right;margin-top:6px; }
+
+/* ═══ IMPROVED BREAKDOWN SECTION ═══ */
+.wdh-breakdown { background:rgba(255,255,255,0.015);border-top:1px solid var(--glass-border);padding:10px 15px 12px; }
+.wdh-brow { display:flex;justify-content:space-between;align-items:center;padding:4px 0; }
+.wdh-brow span { font-size:.66rem;color:var(--text-muted);font-weight:600;letter-spacing:.2px; }
+.wdh-brow b { font-size:.76rem;color:var(--text-primary);font-weight:700; }
+.wdh-brow.charge span { color:rgba(255,107,107,0.6); }
+.wdh-brow.charge b { color:var(--danger);font-weight:800; }
+
+.wdh-final-row {
+  display:flex;align-items:center;justify-content:space-between;
+  margin-top:8px;padding:10px 12px;
+  background:linear-gradient(135deg,rgba(0,210,211,0.06),rgba(85,230,193,0.03));
+  border:1px solid rgba(0,210,211,0.15);
+  border-radius:10px;
+}
+.wdh-final-label {
+  display:flex;align-items:center;gap:5px;
+  font-size:.62rem;font-weight:700;color:rgba(0,210,211,0.7);
+  text-transform:uppercase;letter-spacing:.5px;
+}
+.wdh-final-label i { font-size:.58rem; }
+.wdh-final-amount {
+  font-size:.95rem;font-weight:800;color:var(--accent);
+  font-family:'Sora','Plus Jakarta Sans',sans-serif;
+}
+.wdh-time { font-size:.62rem;color:rgba(162,155,254,0.45);font-weight:600;text-align:right;margin-top:8px;display:flex;align-items:center;justify-content:flex-end;gap:4px; }
+.wdh-time i { font-size:.55rem; }
 
 /* ════════════════════════════════════════
    PROMO SECTION
@@ -1080,6 +1335,9 @@ body::after {
 </head>
 <body>
 
+<!-- NOTIFICATION STACK -->
+<div class="notif-stack" id="notifStack"></div>
+
 <!-- LOADER -->
 <div id="loader">
   <div class="ld-bg-orbs">
@@ -1139,93 +1397,7 @@ body::after {
   </div>
 </div>
 
-<!-- SELL MODALS -->
-<div id="gmailSellModal" class="sell-modal-overlay">
-  <div class="sell-modal-card">
-    <div class="sell-modal-title"><i class="fab fa-google" style="color:#EA4335;"></i> Gmail একাউন্ট বিক্রি</div>
-    <div class="sell-modal-sub">আপনার Gmail একাউন্টের তথ্য দিন। অ্যাডমিন রিভিউ করার পর পেমেন্ট করা হবে।</div>
-    <div class="sell-modal-price"><span id="gmailPriceShow">—</span> <span class="currency">টাকা</span><small>প্রতিটি Gmail একাউন্টের মূল্য</small></div>
-    <input type="email" id="gmailInput" class="sell-modal-input" placeholder="Gmail ঠিকানা">
-    <input type="password" id="gmailPassInput" class="sell-modal-input" placeholder="Gmail পাসওয়ার্ড">
-    <input type="text" id="gmailRecoveryInput" class="sell-modal-input" placeholder="রিকভারি ইমেইল/ফোন (ঐচ্ছিক)">
-    <div class="sell-modal-btns">
-      <button class="sell-modal-cancel" onclick="closeSellModal('gmailSellModal')">বাতিল</button>
-      <button class="sell-modal-submit" onclick="submitSellItem('gmail')"><i class="fas fa-paper-plane"></i> সাবমিট</button>
-    </div>
-  </div>
-</div>
-<div id="instaSellModal" class="sell-modal-overlay">
-  <div class="sell-modal-card">
-    <div class="sell-modal-title"><i class="fab fa-instagram" style="color:#E1306C;"></i> Instagram ID বিক্রি</div>
-    <div class="sell-modal-sub">আপনার Instagram একাউন্টের তথ্য দিন।</div>
-    <div class="sell-modal-price"><span id="instaPriceShow">—</span> <span class="currency">টাকা</span><small>প্রতিটি Instagram ID-এর মূল্য</small></div>
-    <input type="text" id="instaUserInput" class="sell-modal-input" placeholder="Instagram ইউজারনেম">
-    <input type="password" id="instaPassInput" class="sell-modal-input" placeholder="Instagram পাসওয়ার্ড">
-    <input type="number" id="instaFollowersInput" class="sell-modal-input" placeholder="ফলোয়ার সংখ্যা (আনুমানিক)">
-    <div class="sell-modal-btns">
-      <button class="sell-modal-cancel" onclick="closeSellModal('instaSellModal')">বাতিল</button>
-      <button class="sell-modal-submit" onclick="submitSellItem('instagram')"><i class="fas fa-paper-plane"></i> সাবমিট</button>
-    </div>
-  </div>
-</div>
-<div id="fbSellModal" class="sell-modal-overlay">
-  <div class="sell-modal-card">
-    <div class="sell-modal-title"><i class="fab fa-facebook" style="color:#1877F2;"></i> Facebook ID বিক্রি</div>
-    <div class="sell-modal-sub">আপনার Facebook একাউন্টের তথ্য দিন।</div>
-    <div class="sell-modal-price"><span id="fbPriceShow">—</span> <span class="currency">টাকা</span><small>প্রতিটি Facebook ID-এর মূল্য</small></div>
-    <input type="text" id="fbEmailInput" class="sell-modal-input" placeholder="Facebook Email/Phone">
-    <input type="password" id="fbPassInput" class="sell-modal-input" placeholder="Facebook পাসওয়ার্ড">
-    <input type="number" id="fbFriendsInput" class="sell-modal-input" placeholder="বন্ধুর সংখ্যা (আনুমানিক)">
-    <div class="sell-modal-btns">
-      <button class="sell-modal-cancel" onclick="closeSellModal('fbSellModal')">বাতিল</button>
-      <button class="sell-modal-submit" onclick="submitSellItem('facebook')"><i class="fas fa-paper-plane"></i> সাবমিট</button>
-    </div>
-  </div>
-</div>
-<div id="tiktokSellModal" class="sell-modal-overlay">
-  <div class="sell-modal-card">
-    <div class="sell-modal-title"><i class="fab fa-tiktok" style="color:#fff;"></i> TikTok Account বিক্রি</div>
-    <div class="sell-modal-sub">আপনার TikTok একাউন্টের তথ্য দিন।</div>
-    <div class="sell-modal-price"><span id="tiktokPriceShow">—</span> <span class="currency">টাকা</span><small>প্রতিটি TikTok Account-এর মূল্য</small></div>
-    <input type="text" id="tiktokUserInput" class="sell-modal-input" placeholder="TikTok ইউজারনেম">
-    <input type="password" id="tiktokPassInput" class="sell-modal-input" placeholder="TikTok পাসওয়ার্ড">
-    <input type="number" id="tiktokFollowersInput" class="sell-modal-input" placeholder="ফলোয়ার সংখ্যা">
-    <div class="sell-modal-btns">
-      <button class="sell-modal-cancel" onclick="closeSellModal('tiktokSellModal')">বাতিল</button>
-      <button class="sell-modal-submit" onclick="submitSellItem('tiktok')"><i class="fas fa-paper-plane"></i> সাবমিট</button>
-    </div>
-  </div>
-</div>
-<div id="telegramSellModal" class="sell-modal-overlay">
-  <div class="sell-modal-card">
-    <div class="sell-modal-title"><i class="fab fa-telegram" style="color:#24A1DE;"></i> Telegram ID বিক্রি</div>
-    <div class="sell-modal-sub">নিচের তথ্য পূরণ করুন।</div>
-    <div class="sell-modal-price"><span id="telegramPriceShow">—</span> <span class="currency">টাকা</span><small>প্রতিটি Telegram ID-এর মূল্য</small></div>
-    <input type="text" id="telegramUserInput" class="sell-modal-input" placeholder="Telegram ইউজারনেম (@username)">
-    <input type="text" id="telegramPhoneInput" class="sell-modal-input" placeholder="Telegram ফোন নম্বর">
-    <input type="text" id="telegramNoteInput" class="sell-modal-input" placeholder="অতিরিক্ত নোট (ঐচ্ছিক)">
-    <div class="sell-modal-btns">
-      <button class="sell-modal-cancel" onclick="closeSellModal('telegramSellModal')">বাতিল</button>
-      <button class="sell-modal-submit" onclick="submitSellItem('telegram')"><i class="fas fa-paper-plane"></i> সাবমিট</button>
-    </div>
-  </div>
-</div>
-<div id="whatsappSellModal" class="sell-modal-overlay">
-  <div class="sell-modal-card">
-    <div class="sell-modal-title"><i class="fab fa-whatsapp" style="color:#25D366;"></i> WhatsApp ID বিক্রি</div>
-    <div class="sell-modal-sub">নিচের তথ্য পূরণ করুন।</div>
-    <div class="sell-modal-price"><span id="whatsappPriceShow">—</span> <span class="currency">টাকা</span><small>প্রতিটি WhatsApp ID-এর মূল্য</small></div>
-    <input type="text" id="whatsappPhoneInput" class="sell-modal-input" placeholder="WhatsApp ফোন নম্বর">
-    <input type="text" id="whatsappTypeInput" class="sell-modal-input" placeholder="একাউন্ট টাইপ (Normal/Business)">
-    <input type="text" id="whatsappNoteInput" class="sell-modal-input" placeholder="অতিরিক্ত নোট (ঐচ্ছিক)">
-    <div class="sell-modal-btns">
-      <button class="sell-modal-cancel" onclick="closeSellModal('whatsappSellModal')">বাতিল</button>
-      <button class="sell-modal-submit" onclick="submitSellItem('whatsapp')"><i class="fas fa-paper-plane"></i> সাবমিট</button>
-    </div>
-  </div>
-</div>
-
-<!-- TOAST -->
+<!-- TOAST (hidden fallback) -->
 <div id="toast" class="toast">Alert</div>
 
 <!-- STATUS NOTIF OVERLAY -->
@@ -1324,6 +1496,29 @@ body::after {
   </div>
 </div>
 
+<!-- WINNER RESULTS MODAL -->
+<div id="winnerResultsModal" class="winner-modal">
+  <div class="winner-modal-card">
+    <div class="winner-modal-glow"></div>
+    <h3 style="font-size:1.1rem;font-weight:800;color:var(--text-primary);margin-bottom:4px;position:relative;z-index:1;"><i class="fas fa-trophy" style="color:var(--warn);"></i> Winner Results</h3>
+    <p style="font-size:.74rem;color:var(--text-secondary);margin-bottom:16px;position:relative;z-index:1;">গিভঅ্যাওয়ের বিজয়ীদের তালিকা</p>
+    <div id="winnerResultsContent" style="position:relative;z-index:1;"></div>
+    <button class="btn-ghost" onclick="closeWinnerModal()" style="width:100%;justify-content:center;margin-top:14px;"><i class="fas fa-times"></i> বন্ধ করুন</button>
+  </div>
+</div>
+
+<!-- ALL RESULTS MODAL -->
+<div id="allResultsModal" class="all-results-modal">
+  <div class="all-results-card">
+    <div class="all-results-header">
+      <h3><i class="fas fa-clipboard-list" style="color:var(--primary-light);margin-right:6px;"></i> All Results</h3>
+      <p>আপনার সব গিভঅ্যাওয়ে ফলাফল</p>
+    </div>
+    <div class="all-results-scroll" id="allResultsContent"></div>
+    <button class="btn-ghost" onclick="closeAllResultsModal()" style="width:100%;justify-content:center;margin-top:14px;flex-shrink:0;"><i class="fas fa-times"></i> বন্ধ করুন</button>
+  </div>
+</div>
+
 <!-- ═══════════════════════════ MAIN APP ═══════════════════════════ -->
 <div id="app" style="display:none;">
 
@@ -1369,7 +1564,7 @@ body::after {
         <div class="qa-icon" style="background:var(--grad-warm);color:#fff;"><i class="fas fa-gift"></i></div>
         <h5>Giveaway</h5><p>উপহার নিন</p>
       </div>
-      <div class="qa-item" onclick="switchTab('withdraw', document.querySelectorAll('.nav-item-wrap')[6])">
+      <div class="qa-item" onclick="switchTab('withdraw', document.querySelectorAll('.nav-item-wrap')[5])">
         <div class="qa-icon" style="background:var(--grad-accent);color:#06241b;"><i class="fas fa-wallet"></i></div>
         <h5>Withdraw</h5><p>টাকা তুলুন</p>
       </div>
@@ -1383,6 +1578,20 @@ body::after {
         <p>আজকের ফ্রি বোনাস ক্লেইম করুন!</p>
       </div>
       <i class="fas fa-chevron-right" style="color:var(--warn);opacity:.6;margin-left:auto;"></i>
+    </div>
+
+    <!-- Top Leaderboard Mini Section -->
+    <div class="sec-title"><i class="fas fa-crown"></i> Top Leaderboard</div>
+    <div class="home-leaderboard-mini">
+      <div class="home-lb-header">
+        <h4><i class="fas fa-trophy"></i> Top Earners</h4>
+        <div class="home-lb-view-all" onclick="switchTab('leaderboard', document.querySelectorAll('.nav-item-wrap')[6])">
+          View All <i class="fas fa-chevron-right"></i>
+        </div>
+      </div>
+      <div class="home-lb-list" id="homeLbList">
+        <div style="text-align:center;padding:16px;color:var(--text-muted);font-size:.78rem;"><i class="fas fa-spinner fa-spin"></i> Loading...</div>
+      </div>
     </div>
 
     <!-- Ads Section -->
@@ -1413,6 +1622,9 @@ body::after {
     <div class="giveaway-hero">
       <h2>🎁 Giveaways</h2>
       <p>গিভঅ্যাওয়েতে অংশ নিন এবং পুরস্কার জিতুন!</p>
+    </div>
+    <div class="giveaway-all-results-btn" onclick="showAllResults()">
+      <i class="fas fa-clipboard-list"></i> All Results
     </div>
     <div class="giveaway-list" id="giveawayList"></div>
   </div>
@@ -1447,15 +1659,6 @@ body::after {
     <div class="podium-container" id="podium-area"></div>
     <div class="podium-secondary" id="podium-secondary-area"></div>
     <div class="leader-list" id="leader-list-area"></div>
-  </div>
-
-  <!-- ═══════════════ SELL PAGE ═══════════════ -->
-  <div id="page-sell" class="page-section">
-    <div class="sell-header-banner">
-      <h2><i class="fas fa-store"></i> Marketplace</h2>
-      <p>একাউন্ট বিক্রি করুন এবং পেমেন্ট পান</p>
-    </div>
-    <div class="sell-grid" id="sellGrid"></div>
   </div>
 
   <!-- ═══════════════ WITHDRAW PAGE ═══════════════ -->
@@ -1562,7 +1765,7 @@ body::after {
     <div class="promo-page-header">
       <h2><i class="fas fa-tag"></i> Promo Codes</h2>
       <p>প্রমো কোড ব্যবহার করুন এবং বোনাস নিন</p>
-      <button class="promo-back-btn" onclick="switchTab('profile', document.querySelectorAll('.nav-item-wrap')[7])"><i class="fas fa-arrow-left"></i> প্রোফাইলে</button>
+      <button class="promo-back-btn" onclick="switchTab('profile', document.querySelectorAll('.nav-item-wrap')[6])"><i class="fas fa-arrow-left"></i> প্রোফাইলে</button>
     </div>
     <div style="padding:16px 14px 0;">
       <div class="glass-card" style="margin:0 0 12px;">
@@ -1597,9 +1800,6 @@ body::after {
   </div>
   <div class="nav-item-wrap" onclick="switchTab('referral', this)">
     <i class="fas fa-users"></i><span class="nav-label">Refer</span>
-  </div>
-  <div class="nav-item-wrap" onclick="switchTab('leaderboard', this)">
-    <i class="fas fa-trophy"></i><span class="nav-label">Top</span>
   </div>
   <div class="nav-item-wrap" onclick="switchTab('withdraw', this)">
     <i class="fas fa-wallet"></i><span class="nav-label">Wallet</span>
@@ -1655,8 +1855,90 @@ function startLoaderFallback(){
   _loaderFallbackTimer=setTimeout(()=>{if(!_loaderDismissed){document.getElementById('app').style.display='block';checkChannelJoin();dismissLoader();}},5000);
 }
 
-/* ════════ TOAST ════════ */
-function toast(msg){const t=document.getElementById('toast');t.innerText=msg;t.classList.add('show');setTimeout(()=>t.classList.remove('show'),3000);}
+/* ════════════════════════════════════════════════
+   ADVANCED PREMIUM NOTIFICATION SYSTEM
+════════════════════════════════════════════════ */
+let _notifIdCounter=0;
+const _activeNotifs=new Map();
+
+function createPremiumNotif(type, title, message, duration){
+  duration = duration || 3500;
+  const stack = document.getElementById('notifStack');
+  const id = ++_notifIdCounter;
+  
+  const iconMap = {
+    success: 'fa-check-circle',
+    error: 'fa-times-circle',
+    warning: 'fa-exclamation-triangle',
+    info: 'fa-info-circle'
+  };
+  
+  const el = document.createElement('div');
+  el.className = `premium-notif pn-${type}`;
+  el.dataset.notifId = id;
+  el.innerHTML = `
+    <div class="pn-inner">
+      <div class="pn-icon-wrap"><i class="fas ${iconMap[type]||iconMap.info}"></i></div>
+      <div class="pn-body">
+        <div class="pn-title">${title}</div>
+        <div class="pn-msg">${message}</div>
+      </div>
+      <button class="pn-close" onclick="dismissNotif(${id})"><i class="fas fa-times"></i></button>
+    </div>
+    <div class="pn-progress" style="animation-duration:${duration}ms;"></div>
+  `;
+  
+  el.addEventListener('click', (e)=>{
+    if(!e.target.closest('.pn-close')) dismissNotif(id);
+  });
+  
+  stack.appendChild(el);
+  
+  const timer = setTimeout(()=>dismissNotif(id), duration);
+  _activeNotifs.set(id, {el, timer});
+  
+  /* Limit to 3 visible */
+  const all = stack.querySelectorAll('.premium-notif:not(.removing)');
+  if(all.length > 3){
+    const oldest = all[0];
+    const oldId = Number(oldest.dataset.notifId);
+    dismissNotif(oldId);
+  }
+  
+  return id;
+}
+
+function dismissNotif(id){
+  const data = _activeNotifs.get(id);
+  if(!data) return;
+  clearTimeout(data.timer);
+  data.el.classList.add('removing');
+  setTimeout(()=>{
+    if(data.el.parentNode) data.el.parentNode.removeChild(data.el);
+    _activeNotifs.delete(id);
+  }, 350);
+}
+
+/* Convenience wrappers */
+function notifSuccess(msg, title){ return createPremiumNotif('success', title||'সফল!', msg, 3500); }
+function notifError(msg, title){ return createPremiumNotif('error', title||'ত্রুটি!', msg, 4000); }
+function notifWarning(msg, title){ return createPremiumNotif('warning', title||'সতর্কতা!', msg, 4000); }
+function notifInfo(msg, title){ return createPremiumNotif('info', title||'তথ্য', msg, 3500); }
+
+/* ════════ TOAST (now routes to premium notif) ════════ */
+function toast(msg){
+  const m = msg.toLowerCase();
+  if(m.includes('✅') || m.includes('সফল') || m.includes('claimed') || m.includes('+') || m.includes('সম্পন্ন') || m.includes('কপি')){
+    notifSuccess(msg);
+  } else if(m.includes('❌') || m.includes('অবৈধ') || m.includes('অপর্যাপ্ত') || m.includes('ব্যর্থ') || m.includes('failed') || m.includes('সমস্যা')){
+    notifError(msg);
+  } else if(m.includes('⚠️') || m.includes('লিমিট') || m.includes('প্রয়োজন') || m.includes('পূর্ণ') || m.includes('শেষ') || m.includes('সম্পূর্ণ') || m.includes('জয়েন')){
+    notifWarning(msg);
+  } else {
+    notifInfo(msg);
+  }
+}
+
 function todayStr(){return new Date().toISOString().slice(0,10);}
 
 /* ════════ CONFETTI ════════ */
@@ -1683,7 +1965,7 @@ function showRewardAnim(text){
 function getWithdrawChargePct(){const c=appState.config;let v=c.withdrawCharge;if(v===undefined||v===null||v==='')v=c.withdrawFee;if(v===undefined||v===null||v==='')v=c.withdrawChargePercent;v=Number(v);if(isNaN(v)||v<0)v=30;if(v>100)v=100;return v;}
 function calcCharge(amount){const pct=getWithdrawChargePct();const charge=+((Number(amount)*pct)/100).toFixed(2);const receive=+(Number(amount)-charge).toFixed(2);return{pct,charge,receive};}
 
-/* ════════ GET CURRENCY SYMBOL - FIX: Always read latest from config ════════ */
+/* ════════ GET CURRENCY SYMBOL ════════ */
 function getCurrencySymbol(){
   return appState.config.currencySymbol || appState.config.currencyName || 'TK';
 }
@@ -1697,7 +1979,6 @@ function switchTab(tabId,el){
   if(tabId==='leaderboard')loadLeaderboard();
   if(tabId==='withdraw')renderWithdrawBlock();
   if(tabId==='profile')renderProfile();
-  if(tabId==='sell')renderSellPage();
   if(tabId==='promo')renderPromoPage();
   if(tabId==='games')renderGamesPage();
   if(tabId==='giveaway')renderGiveawayPage();
@@ -1761,6 +2042,14 @@ function updateWdCounts(){document.getElementById('cnt-all').innerText=allWdHist
 
 function filterHistory(filter,el){activeWdFilter=filter;document.querySelectorAll('.wdh-tab').forEach(t=>t.classList.remove('active'));el.classList.add('active');renderWdHistory(filter);}
 
+/* ════════ PROFESSIONAL STATUS LABELS ════════ */
+function getStatusLabel(status){
+  if(status==='pending')return '⏳ Processing';
+  if(status==='approved')return '✅ Completed';
+  if(status==='rejected')return '❌ Declined';
+  return '⏳ Processing';
+}
+
 function renderWdHistory(filter){
   const el=document.getElementById('wd-history-area');let items=allWdHistory;
   if(filter==='pending')items=items.filter(i=>i.status==='pending'||!i.status);
@@ -1773,8 +2062,25 @@ function renderWdHistory(filter){
     const reqAmt=Number(item.amount||0);const chargePct=(item.chargePct!==undefined)?Number(item.chargePct):getWithdrawChargePct();
     const chargeAmt=(item.chargeAmount!==undefined)?Number(item.chargeAmount):+((reqAmt*chargePct)/100).toFixed(2);
     const finalAmt=(item.finalAmount!==undefined)?Number(item.finalAmount):+(reqAmt-chargeAmt).toFixed(2);
-    const stLabel=status==='pending'?'⏳ Pending':status==='approved'?'✅ Done':'❌ Rejected';
-    html+=`<div class="wdh-item s-${status}"><div class="wdh-head"><div class="wdh-head-left"><div class="wdh-mic"><i class="fas fa-money-bill-wave"></i></div><div><div class="wdh-method">${item.method||'—'}</div><div class="wdh-account">${item.account||'—'}</div></div></div><div class="wdh-status ${status}">${stLabel}</div></div><div class="wdh-breakdown"><div class="wdh-brow"><span>Requested</span><b>${reqAmt} ${sym}</b></div><div class="wdh-brow charge"><span>Charge (${chargePct}%)</span><b>- ${chargeAmt} ${sym}</b></div><div class="wdh-brow final"><span>Final</span><b>${finalAmt} ${sym}</b></div><div class="wdh-time"><i class="far fa-clock"></i> ${date}</div></div></div>`;
+    const stLabel=getStatusLabel(status);
+    html+=`<div class="wdh-item s-${status}">
+      <div class="wdh-head">
+        <div class="wdh-head-left">
+          <div class="wdh-mic"><i class="fas fa-money-bill-wave"></i></div>
+          <div><div class="wdh-method">${item.method||'—'}</div><div class="wdh-account">${item.account||'—'}</div></div>
+        </div>
+        <div class="wdh-status ${status}">${stLabel}</div>
+      </div>
+      <div class="wdh-breakdown">
+        <div class="wdh-brow"><span>Requested</span><b>${reqAmt} ${sym}</b></div>
+        <div class="wdh-brow charge"><span>Charge (${chargePct}%)</span><b>- ${chargeAmt} ${sym}</b></div>
+        <div class="wdh-final-row">
+          <div class="wdh-final-label"><i class="fas fa-hand-holding-usd"></i> Total Received</div>
+          <div class="wdh-final-amount">${finalAmt} ${sym}</div>
+        </div>
+        <div class="wdh-time"><i class="far fa-clock"></i> ${date}</div>
+      </div>
+    </div>`;
   });
   el.innerHTML=html;
 }
@@ -1783,12 +2089,12 @@ function showStatusNotif(status,data){
   const isApprove=status==='approved';const card=document.getElementById('statusNotifCard');
   card.className='notif-card '+(isApprove?'approved-card':'rejected-card');
   document.getElementById('notifIcon').innerHTML=isApprove?'<i class="fas fa-check"></i>':'<i class="fas fa-times"></i>';
-  document.getElementById('notifBadgeText').innerText=isApprove?'APPROVED':'REJECTED';
-  document.getElementById('notifTitle').innerText=isApprove?'Payment Successful!':'Request Rejected';
+  document.getElementById('notifBadgeText').innerText=isApprove?'COMPLETED':'DECLINED';
+  document.getElementById('notifTitle').innerText=isApprove?'Payment Completed!':'Request Declined';
   document.getElementById('notifMethod').innerText=data.method||'—';
   const sym=getCurrencySymbol();const showAmt=(data.finalAmount!==undefined)?data.finalAmount:data.amount;
   document.getElementById('notifAmount').innerText=(showAmt||'—')+' '+sym;
-  document.getElementById('notifStatus').innerText=isApprove?'✅ Approved':'❌ Rejected';
+  document.getElementById('notifStatus').innerText=isApprove?'✅ Completed':'❌ Declined';
   document.getElementById('notifMsg').innerText=isApprove?'অভিনন্দন! আপনার পেমেন্ট সফলভাবে প্রসেস করা হয়েছে।':'আপনার রিকোয়েস্ট বাতিল হয়েছে। ব্যালেন্স ফেরত দেওয়া হয়েছে।';
   document.getElementById('notifBtnIcon').className=isApprove?'fas fa-check-circle':'fas fa-times-circle';
   document.getElementById('notifBtnText').innerText='Got It!';
@@ -1830,13 +2136,13 @@ async function claimDailyBonus(){
     for(let i=1;i<=bonusAdCount;i++){subText.innerText=`অ্যাড ${i}/${bonusAdCount} দেখছেন…`;await showOneAd(i-1);}
     const newBal=(appState.user.balance||0)+amt;const newEarn=(appState.user.totalEarned||0)+amt;
     await db.ref('users/'+appState.user.id).update({balance:newBal,totalEarned:newEarn,dailyBonusDate:today});
-    hideBonus();showConfetti();showRewardAnim('+'+amt+' '+getCurrencySymbol());toast('বোনাস ক্লেইম সফল! +'+amt);
+    hideBonus();showConfetti();showRewardAnim('+'+amt+' '+getCurrencySymbol());toast('✅ বোনাস ক্লেইম সফল! +'+amt);
     notifyUser(`🎁 <b>ডেইলি বোনাস!</b>\n💰 +${amt} ${getCurrencySymbol()}\n💳 ব্যালেন্স: ${newBal.toFixed(2)}`);
   }catch(e){toast(e.message==="Ad Closed or Cancelled"?"অ্যাড সম্পূর্ণ দেখেননি।":"অ্যাড লোড সমস্যা।");subText.innerText="আবার চেষ্টা করুন।";}
   finally{btn.disabled=false;btnCancel.disabled=false;btn.innerHTML='<i class="fas fa-play-circle"></i> Watch Ads &amp; Claim';}
 }
 
-/* ════════ TEXT UPDATE - FIX: Currency name now updates from config ════════ */
+/* ════════ TEXT UPDATE ════════ */
 function updateTextElements(){
   const cfg=appState.config,u=appState.user;const sym=getCurrencySymbol();
   document.getElementById('u-bal').innerText=(u.balance||0).toFixed(2);
@@ -1844,7 +2150,6 @@ function updateTextElements(){
   document.getElementById('u-ref').innerText=u.referrals||0;
   document.getElementById('ref-bonus-txt').innerText=(cfg.refBonus||5)+' '+sym;
   document.getElementById('ref-link-text').innerText=getRefLink();
-  /* FIX: Update currency label beside balance */
   const balCurrLabel=document.getElementById('bal-currency-label');
   if(balCurrLabel) balCurrLabel.innerText=sym;
   const botNameEl=document.getElementById('bot-name-display');if(botNameEl)botNameEl.innerText=cfg.botName||cfg.botUsername||'';
@@ -1896,7 +2201,7 @@ async function applyPromoCode(inputId){
   const bonus=Number(pd.reward||0);const newBal=(appState.user.balance||0)+bonus;const newEarn=(appState.user.totalEarned||0)+bonus;const sym=getCurrencySymbol();
   await db.ref('users/'+tgUser.id).update({balance:newBal,totalEarned:newEarn,['usedPromos/'+code]:true});
   await db.ref('promoCodes/'+code).update({used:used+1});
-  document.getElementById(inputId).value='';showConfetti();toast('🎉 +'+bonus+' '+sym+' যোগ হয়েছে!');
+  document.getElementById(inputId).value='';showConfetti();toast('✅ +'+bonus+' '+sym+' যোগ হয়েছে!');
   notifyUser(`🎟️ <b>প্রমো কোড সফল!</b>\n🔖 ${code}\n💰 +${bonus} ${sym}`);
   if(inputId==='promoPageInput')renderPromoPage();
 }
@@ -1927,44 +2232,8 @@ async function requestWithdraw(){
   }catch(e){hideWdLoading();toast('সমস্যা হয়েছে');}
 }
 
-/* ════════ SELL PAGE ════════ */
-function renderSellPage(){
-  const cfg=appState.config;const sale=cfg.saleSettings||{};const sym=getCurrencySymbol();const grid=document.getElementById('sellGrid');
-  const items=[
-    {id:'gmail',modal:'gmailSellModal',priceEl:'gmailPriceShow',icon:'<i class="fab fa-google" style="color:#EA4335;font-size:1.5rem;"></i>',iconBg:'logo-gmail',label:'Gmail',price:sale.gmailPrice||'—',enabled:sale.gmailEnabled!==false},
-    {id:'instagram',modal:'instaSellModal',priceEl:'instaPriceShow',icon:'<i class="fab fa-instagram" style="color:#fff;font-size:1.5rem;"></i>',iconBg:'logo-instagram',label:'Instagram',price:sale.instaPrice||'—',enabled:sale.instaEnabled!==false},
-    {id:'facebook',modal:'fbSellModal',priceEl:'fbPriceShow',icon:'<i class="fab fa-facebook" style="color:#1877F2;font-size:1.5rem;"></i>',iconBg:'logo-facebook',label:'Facebook',price:sale.fbPrice||'—',enabled:sale.fbEnabled!==false},
-    {id:'tiktok',modal:'tiktokSellModal',priceEl:'tiktokPriceShow',icon:'<i class="fab fa-tiktok" style="color:#fff;font-size:1.5rem;"></i>',iconBg:'logo-tiktok',label:'TikTok',price:sale.tiktokPrice||'—',enabled:sale.tiktokEnabled!==false},
-    {id:'telegram',modal:'telegramSellModal',priceEl:'telegramPriceShow',icon:'<i class="fab fa-telegram" style="color:#24A1DE;font-size:1.5rem;"></i>',iconBg:'logo-telegram',label:'Telegram',price:sale.telegramPrice||'—',enabled:sale.telegramEnabled!==false},
-    {id:'whatsapp',modal:'whatsappSellModal',priceEl:'whatsappPriceShow',icon:'<i class="fab fa-whatsapp" style="color:#25D366;font-size:1.5rem;"></i>',iconBg:'logo-whatsapp',label:'WhatsApp',price:sale.whatsappPrice||'—',enabled:sale.whatsappEnabled!==false}
-  ];
-  let html='';items.forEach(item=>{
-    const st=item.enabled?'<span class="sell-status on">Active ✓</span>':'<span class="sell-status off">Closed ✗</span>';
-    html+=`<div class="sell-card ${item.enabled?'':'closed'}" onclick="${item.enabled?`openSellModal('${item.modal}','${item.priceEl}','${item.price}','${sym}')`:''}"><div class="sell-card-icon ${item.iconBg}">${item.icon}</div><h4>${item.label}</h4><div class="sell-price">${item.price} ${sym}</div>${st}</div>`;
-  });grid.innerHTML=html;
-}
-function openSellModal(mid,pid,price,sym){document.getElementById(pid).innerText=price;document.getElementById(mid).classList.add('show');}
-function closeSellModal(mid){document.getElementById(mid).classList.remove('show');}
-
-async function notifyAdminOfSell(type,userName,userId,data){
-  let dl='';Object.keys(data).forEach(k=>{if(k!=='type')dl+=`\n• ${k}: <code>${data[k]||'—'}</code>`;});
-  await notifyAdmin(`🔔 <b>Sell!</b>\nType: <b>${type}</b>\n👤 ${userName}\n🆔 ${userId}${dl}`);
-}
-
-async function submitSellItem(type){
-  let data={};
-  if(type==='gmail'){const e=document.getElementById('gmailInput').value.trim();const p=document.getElementById('gmailPassInput').value.trim();if(!e||!p)return toast('তথ্য দিন');data={type:'gmail',email:e,password:p,recovery:document.getElementById('gmailRecoveryInput').value.trim()};closeSellModal('gmailSellModal');}
-  else if(type==='instagram'){const u=document.getElementById('instaUserInput').value.trim();const p=document.getElementById('instaPassInput').value.trim();if(!u||!p)return toast('তথ্য দিন');data={type:'instagram',username:u,password:p,followers:document.getElementById('instaFollowersInput').value||'0'};closeSellModal('instaSellModal');}
-  else if(type==='facebook'){const e=document.getElementById('fbEmailInput').value.trim();const p=document.getElementById('fbPassInput').value.trim();if(!e||!p)return toast('তথ্য দিন');data={type:'facebook',email:e,password:p,friends:document.getElementById('fbFriendsInput').value||'0'};closeSellModal('fbSellModal');}
-  else if(type==='tiktok'){const u=document.getElementById('tiktokUserInput').value.trim();const p=document.getElementById('tiktokPassInput').value.trim();if(!u||!p)return toast('তথ্য দিন');data={type:'tiktok',username:u,password:p,followers:document.getElementById('tiktokFollowersInput').value||'0'};closeSellModal('tiktokSellModal');}
-  else if(type==='telegram'){const u=document.getElementById('telegramUserInput').value.trim();const ph=document.getElementById('telegramPhoneInput').value.trim();if(!u&&!ph)return toast('তথ্য দিন');data={type:'telegram',username:u,phone:ph,note:document.getElementById('telegramNoteInput').value.trim()};closeSellModal('telegramSellModal');}
-  else if(type==='whatsapp'){const ph=document.getElementById('whatsappPhoneInput').value.trim();if(!ph)return toast('ফোন দিন');data={type:'whatsapp',phone:ph,accountType:document.getElementById('whatsappTypeInput').value.trim(),note:document.getElementById('whatsappNoteInput').value.trim()};closeSellModal('whatsappSellModal');}
-  const subId='SELL_'+Date.now();await db.ref('sellSubmissions/'+subId).set({...data,userId:String(tgUser.id),userName:tgUser.first_name,status:'pending',timestamp:Date.now()});
-  toast('✅ সাবমিট হয়েছে!');notifyUser(`🛒 <b>Sell রিকোয়েস্ট গ্রহণ!</b>\n📦 ${type}\n⏳ Pending Review`);notifyAdminOfSell(type,tgUser.first_name,tgUser.id,data);
-}
-
 /* ════════════════════════════════════════════════
-   AD ENGINE - FIX: Proper multi-ad tracking before reward
+   AD ENGINE
 ════════════════════════════════════════════════ */
 const _adsgramControllers={};
 function getAdsgramController(blockId){if(_adsgramControllers[blockId])return _adsgramControllers[blockId];if(!window.Adsgram)return null;try{const ctrl=window.Adsgram.init({blockId:String(blockId)});_adsgramControllers[blockId]=ctrl;return ctrl;}catch(e){return null;}}
@@ -1976,7 +2245,6 @@ function loadGigaPubSDK(appId){return new Promise((resolve)=>{if(window.showGiga
 async function showOneAd(slotIdx){
   return new Promise(async(resolve,reject)=>{
     const cfg=appState.config;const slots=cfg.adSlots||[];
-    /* FIX: Wrap slotIdx to available slots */
     const actualIdx = slots.length > 0 ? (slotIdx % slots.length) : 0;
     const slot=slots[actualIdx];
     if(!slot||!slot.id||!slot.network||slot.network==='none'||slot.network===''){resolve();return;}
@@ -2001,7 +2269,7 @@ function preloadAds(){
   });
 }
 
-/* ════════ AD CARDS - FIX: Support adsRequiredPerReward (multiple ads before reward) ════════ */
+/* ════════ AD CARDS ════════ */
 function getAdsRequiredPerReward(){
   const cfg=appState.config;
   let v=cfg.adsRequiredPerReward||cfg.adsPerReward||cfg.adWatchRequired||1;
@@ -2018,32 +2286,26 @@ function renderAds(){
     const wt=Number((appState.user.dailyAds&&appState.user.dailyAds[today]&&appState.user.dailyAds[today]['slot_'+i])||0);
     const isDone=wt>=limit;const netMap={adsgram:'Adsgram',monetag:'Monetag',gigapub:'GigaPub',tads:'TADS'};const netLabel=netMap[(slot.network||'').toLowerCase()]||slot.network;
     const colors=['#6C5CE7,#A29BFE','#00D2D3,#55E6C1','#FF6B6B,#FF9FF3','#54A0FF,#2E86DE'];const icons=['fa-film','fa-photo-video','fa-play-circle','fa-ad'];
-    /* FIX: Show ads required info */
     const adsReqText = adsRequired > 1 ? `(${adsRequired} ads)` : '';
     html+=`<div class="ad-card ${isDone?'daily-done':''}" onclick="watchAd(${i})"><div class="ad-icon" style="background:linear-gradient(135deg,${colors[i%4]});color:#fff;"><i class="fas ${icons[i%4]}"></i></div><h4>Ad ${i+1}</h4><p>${netLabel} ${adsReqText}</p><p style="font-size:.64rem;color:var(--text-muted);margin-top:2px;">${wt}/${limit}</p><div class="ad-reward-badge">+${reward} ${sym}</div></div>`;
   });
   el.innerHTML=rendered>0?html:'<p style="color:var(--text-muted);font-size:.82rem;text-align:center;padding:20px;grid-column:1/-1;">No ads available</p>';
 }
 
-/* FIX: watchAd now supports multiple ads required before crediting reward */
 async function watchAd(slotIdx){
   const cfg=appState.config;const slot=(cfg.adSlots||[])[slotIdx];const today=todayStr();const limit=Number(cfg.dailyAdLimit||10);
   const wt=Number((appState.user.dailyAds&&appState.user.dailyAds[today]&&appState.user.dailyAds[today]['slot_'+slotIdx])||0);
   if(wt>=limit)return toast('লিমিট শেষ!');if(!slot||!slot.id||slot.network==='none')return toast('স্লট সক্রিয় নেই।');
-  
   const adsRequired=getAdsRequiredPerReward();
-  
   try{
-    /* Show required number of ads before crediting */
     for(let adIdx=0;adIdx<adsRequired;adIdx++){
       if(adsRequired>1) toast(`অ্যাড ${adIdx+1}/${adsRequired} দেখুন…`);
       await showOneAd(slotIdx);
     }
-    
     const reward=Number(cfg.adReward||0.5);const sym=getCurrencySymbol();
     const newBal=(appState.user.balance||0)+reward;const newEarn=(appState.user.totalEarned||0)+reward;const newCount=wt+1;
     await db.ref('users/'+appState.user.id).update({balance:newBal,totalEarned:newEarn,['dailyAds/'+today+'/slot_'+slotIdx]:newCount});
-    toast('+'+reward+' '+sym);
+    toast('✅ +'+reward+' '+sym);
   }catch(e){toast('সম্পূর্ণ দেখুন');}
 }
 
@@ -2061,7 +2323,7 @@ async function doTask(taskId,url,reward){
   await new Promise(r=>setTimeout(r,3500));if(appState.user.taskHistory&&appState.user.taskHistory[taskId])return;
   const sym=getCurrencySymbol();const newBal=(appState.user.balance||0)+Number(reward);const newEarn=(appState.user.totalEarned||0)+Number(reward);
   await db.ref('users/'+appState.user.id).update({balance:newBal,totalEarned:newEarn,['taskHistory/'+taskId]:Date.now()});
-  showRewardAnim('+'+reward+' '+sym);toast('টাস্ক সম্পন্ন!');
+  showRewardAnim('+'+reward+' '+sym);toast('✅ টাস্ক সম্পন্ন!');
   notifyUser(`✅ <b>টাস্ক সম্পন্ন!</b>\n💰 +${reward} ${sym}`);
 }
 
@@ -2078,7 +2340,7 @@ async function claimRefTask(taskId,reward){
   if(appState.user.claimedRefTasks&&appState.user.claimedRefTasks[taskId])return toast('Already claimed!');
   const sym=getCurrencySymbol();const newBal=(appState.user.balance||0)+Number(reward);const newEarn=(appState.user.totalEarned||0)+Number(reward);
   await db.ref('users/'+appState.user.id).update({balance:newBal,totalEarned:newEarn,['claimedRefTasks/'+taskId]:true});
-  showConfetti();showRewardAnim('+'+reward+' '+sym);toast('🎉 Claimed!');
+  showConfetti();showRewardAnim('+'+reward+' '+sym);toast('✅ Claimed!');
 }
 
 /* ════════ LEADERBOARD ════════ */
@@ -2100,32 +2362,105 @@ async function loadLeaderboard(){
   pe.innerHTML=top3||'<div style="text-align:center;padding:24px;color:var(--text-muted);flex:1;">ডেটা নেই</div>';se.innerHTML=second;le.innerHTML=listHtml;
 }
 
+/* ════════ HOME MINI LEADERBOARD ════════ */
+async function loadHomeMiniLeaderboard(){
+  const sym=getCurrencySymbol();const el=document.getElementById('homeLbList');
+  try{
+    const snap=await db.ref('users').orderByChild('totalEarned').limitToLast(5).once('value');
+    let users=[];
+    snap.forEach(child=>{const u=child.val();if(u&&(u.totalEarned>0||u.balance>0))users.push(u);});
+    users.sort((a,b)=>(b.totalEarned||0)-(a.totalEarned||0));
+    users=users.slice(0,5);
+    
+    if(!users.length){
+      el.innerHTML='<div style="text-align:center;padding:16px;color:var(--text-muted);font-size:.78rem;">ডেটা নেই</div>';
+      return;
+    }
+    
+    let html='';
+    users.forEach((u,i)=>{
+      const pic=u.photo||'https://via.placeholder.com/34';
+      const name=u.name?u.name.substring(0,14):'User';
+      const earned=Number(u.totalEarned||0).toFixed(2);
+      const bal=Number(u.balance||0).toFixed(2);
+      html+=`<div class="home-lb-item">
+        <div class="home-lb-rank">${i+1}</div>
+        <img class="home-lb-img" src="${pic}" onerror="this.src='https://via.placeholder.com/34'">
+        <div class="home-lb-info">
+          <div class="home-lb-name">${name}</div>
+          <div class="home-lb-earn">Earned: ${earned} ${sym}</div>
+        </div>
+        <div class="home-lb-bal">${bal} ${sym}</div>
+      </div>`;
+    });
+    el.innerHTML=html;
+  }catch(e){
+    el.innerHTML='<div style="text-align:center;padding:16px;color:var(--text-muted);font-size:.78rem;">লোড সমস্যা</div>';
+  }
+}
+
 /* ════════════════════════════════════════════════
-   GAMES SYSTEM - FIX: Always fetch latest reward/limit from config
+   GAMES SYSTEM - FIX: Read nested structure from Admin
+   Admin saves: config/gameSettings/spin/{enabled, reward, adsRequired, dailyLimit, cooldown}
+   So we read the nested structure properly.
 ════════════════════════════════════════════════ */
 let gameState={spin:{target:0},guess:{target:0,attempts:0,maxAttempts:7},scratch:{revealed:false}};
+let gameSettingsListener=null;
+let gameSettingsListener2=null;
 
-/* FIX: getGameConfig now always reads fresh from appState.config */
 function getGameConfig(){
-  const gc=appState.config.gameSettings||appState.config.games||{};
+  /* Admin saves nested: gameSettings.spin.enabled, gameSettings.spin.reward, etc.
+     We need to read from the nested structure */
+  const gs=appState.config.gameSettings||{};
+  const g2=appState.config.games||{};
+  /* Merge: prefer gameSettings over games */
+  const src=Object.keys(gs).length>0?gs:g2;
+  
+  /* Check if data is nested (admin format: src.spin.enabled) or flat (old format: src.spinEnabled) */
+  const isNested = src.spin && typeof src.spin === 'object';
+  
+  if(isNested){
+    const s=src.spin||{};const l=src.lucky||{};const sc=src.scratch||{};const gu=src.guess||{};
+    return{
+      spinEnabled:s.enabled!==false,
+      spinReward:Number(s.reward||5),
+      spinDailyLimit:Number(s.dailyLimit||3),
+      spinAdsRequired:Number(s.adsRequired||1),
+      spinCooldown:Number(s.cooldown||0),
+      luckyEnabled:l.enabled!==false,
+      luckyReward:Number(l.reward||3),
+      luckyDailyLimit:Number(l.dailyLimit||3),
+      luckyAdsRequired:Number(l.adsRequired||1),
+      scratchEnabled:sc.enabled!==false,
+      scratchReward:Number(sc.reward||4),
+      scratchDailyLimit:Number(sc.dailyLimit||3),
+      scratchAdsRequired:Number(sc.adsRequired||1),
+      guessEnabled:gu.enabled!==false,
+      guessReward:Number(gu.reward||10),
+      guessDailyLimit:Number(gu.dailyLimit||3),
+      guessAdsRequired:Number(gu.adsRequired||1)
+    };
+  }
+  
+  /* Fallback: flat format */
   return{
-    spinEnabled:gc.spinEnabled!==false,
-    spinReward:Number(gc.spinReward||gc.spinWinReward||5),
-    spinDailyLimit:Number(gc.spinDailyLimit||gc.spinLimit||3),
-    spinAdsRequired:Number(gc.spinAdsRequired||gc.spinAds||1),
-    spinCooldown:Number(gc.spinCooldown||0),
-    luckyEnabled:gc.luckyEnabled!==false,
-    luckyReward:Number(gc.luckyReward||gc.luckyWinReward||3),
-    luckyDailyLimit:Number(gc.luckyDailyLimit||gc.luckyLimit||3),
-    luckyAdsRequired:Number(gc.luckyAdsRequired||gc.luckyAds||1),
-    scratchEnabled:gc.scratchEnabled!==false,
-    scratchReward:Number(gc.scratchReward||gc.scratchWinReward||4),
-    scratchDailyLimit:Number(gc.scratchDailyLimit||gc.scratchLimit||3),
-    scratchAdsRequired:Number(gc.scratchAdsRequired||gc.scratchAds||1),
-    guessEnabled:gc.guessEnabled!==false,
-    guessReward:Number(gc.guessReward||gc.guessWinReward||10),
-    guessDailyLimit:Number(gc.guessDailyLimit||gc.guessLimit||3),
-    guessAdsRequired:Number(gc.guessAdsRequired||gc.guessAds||1)
+    spinEnabled:src.spinEnabled!==false,
+    spinReward:Number(src.spinReward||src.spinWinReward||5),
+    spinDailyLimit:Number(src.spinDailyLimit||src.spinLimit||3),
+    spinAdsRequired:Number(src.spinAdsRequired||src.spinAds||1),
+    spinCooldown:Number(src.spinCooldown||0),
+    luckyEnabled:src.luckyEnabled!==false,
+    luckyReward:Number(src.luckyReward||src.luckyWinReward||3),
+    luckyDailyLimit:Number(src.luckyDailyLimit||src.luckyLimit||3),
+    luckyAdsRequired:Number(src.luckyAdsRequired||src.luckyAds||1),
+    scratchEnabled:src.scratchEnabled!==false,
+    scratchReward:Number(src.scratchReward||src.scratchWinReward||4),
+    scratchDailyLimit:Number(src.scratchDailyLimit||src.scratchLimit||3),
+    scratchAdsRequired:Number(src.scratchAdsRequired||src.scratchAds||1),
+    guessEnabled:src.guessEnabled!==false,
+    guessReward:Number(src.guessReward||src.guessWinReward||10),
+    guessDailyLimit:Number(src.guessDailyLimit||src.guessLimit||3),
+    guessAdsRequired:Number(src.guessAdsRequired||src.guessAds||1)
   };
 }
 
@@ -2138,6 +2473,29 @@ async function watchGameAds(count){
   for(let i=0;i<count;i++){
     await showOneAd(i % (slots.length || 1));
   }
+}
+
+/* Start real-time listener for game settings */
+function startGameSettingsListener(){
+  if(gameSettingsListener) return;
+  gameSettingsListener = db.ref('config/gameSettings').on('value', snap=>{
+    if(snap && snap.exists()){
+      appState.config.gameSettings = snap.val();
+      const gamesPage = document.getElementById('page-games');
+      if(gamesPage && gamesPage.classList.contains('active')){
+        renderGamesPage();
+      }
+    }
+  });
+  gameSettingsListener2 = db.ref('config/games').on('value', snap=>{
+    if(snap && snap.exists()){
+      appState.config.games = snap.val();
+      const gamesPage = document.getElementById('page-games');
+      if(gamesPage && gamesPage.classList.contains('active')){
+        renderGamesPage();
+      }
+    }
+  });
 }
 
 function renderGamesPage(){
@@ -2161,15 +2519,12 @@ function renderGamesPage(){
 }
 
 async function openGame(gameId,modalId){
-  /* FIX: Re-read game config fresh each time */
   const gc=getGameConfig();const plays=getGamePlays(gameId);
   const limitMap={spin:gc.spinDailyLimit,lucky:gc.luckyDailyLimit,scratch:gc.scratchDailyLimit,guess:gc.guessDailyLimit};
   const adsMap={spin:gc.spinAdsRequired,lucky:gc.luckyAdsRequired,scratch:gc.scratchAdsRequired,guess:gc.guessAdsRequired};
   if(plays>=limitMap[gameId])return toast('আজকের লিমিট শেষ!');
   const adsReq=adsMap[gameId]||1;
-  /* Show ads first */
   try{if(adsReq>0){toast('অ্যাড দেখুন…');await watchGameAds(adsReq);}}catch(e){return toast('অ্যাড সম্পূর্ণ দেখুন');}
-  /* Init game */
   if(gameId==='spin')initSpin();
   else if(gameId==='lucky')initLuckyBox();
   else if(gameId==='scratch')initScratch();
@@ -2215,7 +2570,6 @@ async function doSpin(){
   await new Promise(r=>setTimeout(r,4200));
   await incrementGamePlay('spin');
   if(winIdx>=0){
-    /* FIX: Read reward fresh from config */
     const reward=getGameConfig().spinReward;const sym=getCurrencySymbol();
     const newBal=(appState.user.balance||0)+reward;const newEarn=(appState.user.totalEarned||0)+reward;
     await db.ref('users/'+appState.user.id).update({balance:newBal,totalEarned:newEarn});
@@ -2242,14 +2596,12 @@ async function openLuckyBox(el){
   await incrementGamePlay('lucky');
   if(isWin){
     el.classList.add('winner');el.innerHTML='💰';
-    /* FIX: Read reward fresh */
     const reward=getGameConfig().luckyReward;const sym=getCurrencySymbol();
     const newBal=(appState.user.balance||0)+reward;const newEarn=(appState.user.totalEarned||0)+reward;
     await db.ref('users/'+appState.user.id).update({balance:newBal,totalEarned:newEarn});
     document.getElementById('luckyBoxResult').innerText='🎉 +'+reward+' '+sym+' জিতেছেন!';
     showConfetti();showRewardAnim('+'+reward+' '+sym);
   }else{el.innerHTML='❌';document.getElementById('luckyBoxResult').innerText='❌ ভাগ্য হয়নি!';}
-  /* Reveal all */
   setTimeout(()=>{document.querySelectorAll('.lucky-box').forEach(b=>{b.classList.add('opened');if(b.dataset.win==='true'&&!b.classList.contains('winner')){b.innerHTML='💰';b.classList.add('winner');}else if(b.dataset.win==='false'&&b.innerHTML==='🎁'){b.innerHTML='❌';}});},800);
 }
 
@@ -2260,7 +2612,6 @@ function initScratch(){
   ctx.fillStyle='#6C5CE7';ctx.fillRect(0,0,240,160);
   ctx.fillStyle='rgba(255,255,255,0.15)';ctx.font='bold 14px Sora';ctx.textAlign='center';
   ctx.fillText('স্ক্র্যাচ করুন',120,85);
-  /* FIX: Read reward fresh */
   const gc=getGameConfig();const isWin=Math.random()<0.5;const reward=isWin?gc.scratchReward:0;
   document.getElementById('scratchReward').innerText=isWin?'🎉 +'+reward+' '+getCurrencySymbol():'❌ ভাগ্য হয়নি';
   document.getElementById('scratchResult').innerText='';
@@ -2281,7 +2632,6 @@ async function completeScratch(){
   if(plays>=gc.scratchDailyLimit){toast('লিমিট শেষ!');return;}
   await incrementGamePlay('scratch');
   const{isWin}=gameState.scratch;
-  /* FIX: Read reward fresh from config at completion time */
   const reward=isWin?getGameConfig().scratchReward:0;
   const sym=getCurrencySymbol();
   if(isWin){
@@ -2308,7 +2658,6 @@ async function doGuess(){
     gameState.guess.won=true;document.getElementById('guessHint').innerText='🎉 সঠিক!';
     const plays=getGamePlays('guess');if(plays>=gc.guessDailyLimit){toast('লিমিট শেষ!');return;}
     await incrementGamePlay('guess');
-    /* FIX: Read reward fresh */
     const reward=getGameConfig().guessReward;const sym=getCurrencySymbol();
     const newBal=(appState.user.balance||0)+reward;const newEarn=(appState.user.totalEarned||0)+reward;
     await db.ref('users/'+appState.user.id).update({balance:newBal,totalEarned:newEarn});
@@ -2320,58 +2669,177 @@ async function doGuess(){
 }
 
 /* ════════════════════════════════════════════════
-   GIVEAWAY SYSTEM - FIX: Complete data display from Admin Panel
+   GIVEAWAY SYSTEM - FIX: Match Admin's DB structure
+   Admin writes:
+   - endDate (not endTime)
+   - winners (object with {uid: {selectedAt}}) — NOT winnerList/winnerResults
+   - status: 'completed' (not resultPublished)
+   - winnerCount (number of intended winners)
+   - reward (per winner amount)
+   - totalPrize
 ════════════════════════════════════════════════ */
 let giveawayTimers={};
 let giveawayListener=null;
+let giveawayDataCache={};
+
+/* Helper: Get the end timestamp from giveaway data (Admin uses endDate) */
+function getGiveawayEndTime(g){
+  return g.endTime || g.endDate || 0;
+}
+
+/* Helper: Get number of winners intended */
+function getGiveawayWinnerCount(g){
+  /* Admin stores winnerCount as the intended number of winners.
+     g.winners is the actual winners object (collision in original code).
+     We need to distinguish: if g.winnerCount exists as a number, use it.
+     Otherwise check g.numberOfWinners, then fallback to 1. */
+  const wc = g.winnerCount || g.numberOfWinners || 1;
+  return Number(wc);
+}
+
+/* Helper: Get actual winners object from giveaway */
+function getGiveawayWinnersObj(g){
+  /* Admin saves winners under g.winners as {uid: {selectedAt: timestamp}}
+     But g.winners could also be the winnerCount number in some contexts.
+     We also check g.winnerList, g.winnerResults, g.winner for compatibility. */
+  
+  /* If g.winners is an object (not a number), it's the winners data */
+  if(g.winners && typeof g.winners === 'object' && !Array.isArray(g.winners)){
+    /* Verify it's actually winner data and not something else */
+    const firstKey = Object.keys(g.winners)[0];
+    if(firstKey && (typeof g.winners[firstKey] === 'object' || typeof g.winners[firstKey] === 'string')){
+      return g.winners;
+    }
+  }
+  
+  /* Fallback to other possible paths */
+  if(g.winnerList && typeof g.winnerList === 'object') return g.winnerList;
+  if(g.winnerResults && typeof g.winnerResults === 'object') return g.winnerResults;
+  
+  /* Single winner */
+  if(g.winner && typeof g.winner === 'string'){
+    return {[g.winner]: {name: g.winnerName || 'User'}};
+  }
+  
+  return null;
+}
+
+/* Helper: Check if giveaway has winner data */
+function hasWinnerData(g){
+  return !!(getGiveawayWinnersObj(g)) || g.status === 'completed';
+}
+
+/* Helper: Determine user's giveaway result status */
+function getUserGiveawayStatus(g, userId){
+  const now=Date.now();
+  const endTime=getGiveawayEndTime(g);
+  const ended=endTime && now > endTime;
+  const joined=g.participants && g.participants[userId];
+  const winnersObj=getGiveawayWinnersObj(g);
+  const isCompleted = g.status === 'completed' || g.resultPublished || g.resultAnnounced || g.winnersAnnounced;
+  
+  if(!ended){
+    return {status:'running', label:'চলমান', badge:'gsb-running', icon:'fa-play-circle'};
+  }
+  
+  /* Ended but no winner data and not completed */
+  if(!winnersObj && !isCompleted){
+    return {status:'waiting', label:'ফলাফলের অপেক্ষায়', badge:'gsb-waiting', icon:'fa-hourglass-half'};
+  }
+  
+  /* Result is available - check if user won */
+  if(winnersObj || isCompleted){
+    let isWinner = false;
+    let wonAmount = 0;
+    const totalPrize=Number(g.prize||g.totalPrize||g.prizeAmount||0);
+    const numberOfWinners=getGiveawayWinnerCount(g);
+    const perWinnerReward=Number(g.reward||0) || (numberOfWinners>0?(totalPrize/numberOfWinners):totalPrize);
+    
+    if(winnersObj && winnersObj[userId]){
+      isWinner=true;
+      const wd=winnersObj[userId];
+      wonAmount=Number((typeof wd==='object')?(wd.prize||wd.amount||perWinnerReward):perWinnerReward);
+    }
+    
+    if(isWinner){
+      return {status:'won', label:'আপনি জিতেছেন! 🎉', badge:'gsb-won', icon:'fa-trophy', amount:wonAmount};
+    } else if(joined){
+      return {status:'lost', label:'জিতেননি', badge:'gsb-lost', icon:'fa-times-circle'};
+    } else {
+      return {status:'ended', label:'শেষ হয়েছে', badge:'gsb-ended', icon:'fa-flag-checkered'};
+    }
+  }
+  
+  return {status:'waiting', label:'ফলাফলের অপেক্ষায়', badge:'gsb-waiting', icon:'fa-hourglass-half'};
+}
 
 function renderGiveawayPage(){
   const el=document.getElementById('giveawayList');
   el.innerHTML='<div class="history-empty"><i class="fas fa-spinner fa-spin"></i><p>লোড হচ্ছে…</p></div>';
   Object.values(giveawayTimers).forEach(clearInterval);giveawayTimers={};
   
-  /* FIX: Use real-time listener instead of once() for live updates */
   if(giveawayListener){db.ref('giveaways').off('value',giveawayListener);giveawayListener=null;}
   
-  giveawayListener=db.ref('giveaways').orderByChild('endTime').on('value',snap=>{
+  giveawayListener=db.ref('giveaways').on('value',snap=>{
     Object.values(giveawayTimers).forEach(clearInterval);giveawayTimers={};
     
     if(!snap.exists()){el.innerHTML='<div class="giveaway-empty"><i class="fas fa-gift"></i><p>কোনো গিভঅ্যাওয়ে নেই</p></div>';return;}
     let items=[];snap.forEach(c=>{items.push({key:c.key,...c.val()});});
-    items.sort((a,b)=>(b.endTime||0)-(a.endTime||0));
+    
+    /* Sort by end time descending */
+    items.sort((a,b)=>(getGiveawayEndTime(b))-(getGiveawayEndTime(a)));
+    
+    /* Cache giveaway data for winner results */
+    giveawayDataCache={};
+    items.forEach(g=>{giveawayDataCache[g.key]=g;});
+    
     const sym=getCurrencySymbol();const userId=String(tgUser.id);let html='';
     items.forEach((g,idx)=>{
-      const now=Date.now();const ended=g.endTime&&now>g.endTime;const joined=g.participants&&g.participants[userId];
+      const now=Date.now();
+      const endTime=getGiveawayEndTime(g);
+      const ended=endTime && now > endTime;
+      const joined=g.participants && g.participants[userId];
       const participantCount=g.participants?Object.keys(g.participants).length:0;
       
-      /* FIX: Read all giveaway fields properly */
-      const totalPrize=g.prize||g.totalPrize||g.prizeAmount||0;
-      const numberOfWinners=g.winners||g.numberOfWinners||g.winnerCount||1;
+      const totalPrize=g.totalPrize || g.prize || g.prizeAmount || 0;
+      const numberOfWinners=getGiveawayWinnerCount(g);
+      const perWinnerReward=Number(g.reward||0) || (numberOfWinners>0?(Number(totalPrize)/numberOfWinners):totalPrize);
       const maxJoinLimit=g.maxParticipants||g.maxJoin||g.joinLimit||0;
       const remainingSlots=maxJoinLimit>0?Math.max(0,maxJoinLimit-participantCount):0;
-      const giveawayStatus=ended?'সময় শেষ':(g.status||'চলমান');
+      
+      /* Get user's status for this giveaway */
+      const userStatus = getUserGiveawayStatus(g, userId);
+      const winnersObj = getGiveawayWinnersObj(g);
+      const hasWinners = !!winnersObj;
+      
+      /* Status badge */
+      let statusBadgeHtml = `<div class="giveaway-status-badge ${userStatus.badge}"><i class="fas ${userStatus.icon}"></i> ${userStatus.label}</div>`;
       
       let btnHtml='';
       if(ended){
-        if(g.winner){btnHtml=g.winner===userId?`<button class="giveaway-join-btn joined">🏆 আপনি জিতেছেন!</button>`:`<button class="giveaway-join-btn ended">🏆 বিজয়ী: ${g.winnerName||'User'}</button>`;}
-        else if(g.winners && typeof g.winners === 'object'){
-          const winnerNames=Object.values(g.winners).map(w=>w.name||'User').join(', ');
-          btnHtml=`<button class="giveaway-join-btn ended">🏆 বিজয়ী: ${winnerNames}</button>`;
+        if(userStatus.status==='won'){
+          btnHtml=`<button class="giveaway-join-btn joined">🏆 আপনি জিতেছেন! +${userStatus.amount||0} ${sym}</button>`;
+        } else if(hasWinners || g.status==='completed'){
+          btnHtml=`<button class="giveaway-join-btn ended"><i class="fas fa-trophy"></i> বিজয়ী ঘোষিত</button>`;
+        } else {
+          btnHtml=`<button class="giveaway-join-btn ended"><i class="fas fa-hourglass-half"></i> ফলাফলের অপেক্ষায়</button>`;
         }
-        else{btnHtml=`<button class="giveaway-join-btn ended"><i class="fas fa-clock"></i> সময় শেষ</button>`;}
       }else if(maxJoinLimit>0&&participantCount>=maxJoinLimit&&!joined){
         btnHtml=`<button class="giveaway-join-btn ended"><i class="fas fa-lock"></i> স্লট পূর্ণ</button>`;
       }else if(joined){btnHtml=`<button class="giveaway-join-btn joined"><i class="fas fa-check-circle"></i> অংশ নেওয়া হয়েছে</button>`;}
       else{btnHtml=`<button class="giveaway-join-btn" onclick="joinGiveaway('${g.key}')"><i class="fas fa-hand-point-up"></i> অংশ নিন</button>`;}
       
-      /* FIX: Build complete giveaway stats display */
+      /* Winner Results Button */
+      let winnerBtnHtml='';
+      if(ended && (hasWinners || g.status==='completed')){
+        winnerBtnHtml=`<button class="giveaway-winner-btn" onclick="showWinnerResults('${g.key}')"><i class="fas fa-trophy"></i> Winner Results দেখুন</button>`;
+      }
+      
       let statsHtml=`<div class="giveaway-stats">
         <span><i class="fas fa-users"></i> ${participantCount} জন${maxJoinLimit>0?' / '+maxJoinLimit:''}</span>
         <span><i class="fas fa-trophy"></i> ${numberOfWinners} বিজয়ী</span>
-        <span>${giveawayStatus}</span>
       </div>`;
       
-      /* FIX: Show remaining slots if maxJoinLimit is set */
       let slotsHtml='';
       if(maxJoinLimit>0&&!ended){
         slotsHtml=`<div style="font-size:.68rem;color:var(--text-muted);text-align:center;margin-bottom:8px;"><i class="fas fa-ticket-alt"></i> বাকি স্লট: <b style="color:var(--warn);">${remainingSlots}</b></div>`;
@@ -2379,14 +2847,15 @@ function renderGiveawayPage(){
       
       html+=`<div class="giveaway-card">
         <div class="giveaway-top"><div class="giveaway-icon"><i class="fas fa-trophy"></i></div><div class="giveaway-info"><h4>${g.title||'Giveaway'}</h4><p>${g.description||''}</p></div></div>
+        ${statusBadgeHtml}
         <div class="giveaway-prize"><div class="prize-amount">${totalPrize} ${sym}</div><small>মোট পুরস্কার | ${numberOfWinners} জন বিজয়ী</small></div>
         <div class="giveaway-countdown" id="gw-cd-${idx}"></div>
         ${slotsHtml}
         ${statsHtml}
         ${btnHtml}
+        ${winnerBtnHtml}
       </div>`;
-      /* Countdown */
-      if(!ended&&g.endTime){setTimeout(()=>{updateGiveawayCountdown(idx,g.endTime);giveawayTimers[idx]=setInterval(()=>updateGiveawayCountdown(idx,g.endTime),1000);},100);}
+      if(!ended&&endTime){setTimeout(()=>{updateGiveawayCountdown(idx,endTime);giveawayTimers[idx]=setInterval(()=>updateGiveawayCountdown(idx,endTime),1000);},100);}
     });
     el.innerHTML=html||'<div class="giveaway-empty"><i class="fas fa-gift"></i><p>কোনো গিভঅ্যাওয়ে নেই</p></div>';
   });
@@ -2403,21 +2872,181 @@ function updateGiveawayCountdown(idx,endTime){
 async function joinGiveaway(giveawayKey){
   const userId=String(tgUser.id);const snap=await db.ref('giveaways/'+giveawayKey).once('value');
   if(!snap.exists())return toast('গিভঅ্যাওয়ে পাওয়া যায়নি');
-  const g=snap.val();if(g.endTime&&Date.now()>g.endTime)return toast('সময় শেষ!');
+  const g=snap.val();
+  const endTime=getGiveawayEndTime(g);
+  if(endTime&&Date.now()>endTime)return toast('সময় শেষ!');
   if(g.participants&&g.participants[userId])return toast('ইতিমধ্যে অংশ নিয়েছেন!');
-  /* FIX: Check max join limit */
   const maxJoinLimit=g.maxParticipants||g.maxJoin||g.joinLimit||0;
   const participantCount=g.participants?Object.keys(g.participants).length:0;
   if(maxJoinLimit>0&&participantCount>=maxJoinLimit)return toast('স্লট পূর্ণ!');
   
   await db.ref('giveaways/'+giveawayKey+'/participants/'+userId).set({name:tgUser.first_name,joinedAt:Date.now()});
   toast('✅ অংশগ্রহণ সফল!');showConfetti();
-  notifyUser(`🎁 <b>গিভঅ্যাওয়েতে অংশ নেওয়া হয়েছে!</b>\n🏆 ${g.title||'Giveaway'}\n💰 পুরস্কার: ${g.prize||g.totalPrize||0} ${getCurrencySymbol()}`);
+  const totalPrize=g.totalPrize||g.prize||0;
+  notifyUser(`🎁 <b>গিভঅ্যাওয়েতে অংশ নেওয়া হয়েছে!</b>\n🏆 ${g.title||'Giveaway'}\n💰 পুরস্কার: ${totalPrize} ${getCurrencySymbol()}`);
+}
+
+/* ════════ WINNER RESULTS MODAL ════════ */
+function showWinnerResults(giveawayKey){
+  const g=giveawayDataCache[giveawayKey];
+  if(!g){toast('ডেটা পাওয়া যায়নি');return;}
+  
+  const sym=getCurrencySymbol();
+  const totalPrize=Number(g.totalPrize||g.prize||g.prizeAmount||0);
+  const numberOfWinners=getGiveawayWinnerCount(g);
+  const perWinnerReward=Number(g.reward||0) || (numberOfWinners>0?(totalPrize/numberOfWinners).toFixed(2):totalPrize);
+  
+  let contentHtml='';
+  contentHtml+=`<div style="text-align:center;margin-bottom:14px;">
+    <div style="font-size:.76rem;color:var(--text-muted);font-weight:700;margin-bottom:4px;">${g.title||'Giveaway'}</div>
+    <div style="font-size:1.1rem;font-weight:800;color:var(--warn);font-family:'Sora',sans-serif;">${totalPrize} ${sym}</div>
+    <div style="font-size:.68rem;color:var(--text-muted);margin-top:2px;">মোট পুরস্কার</div>
+  </div>`;
+  
+  const winnersObj=getGiveawayWinnersObj(g);
+  const userId=String(tgUser.id);
+  
+  if(!winnersObj || Object.keys(winnersObj).length===0){
+    contentHtml+=`<div style="text-align:center;padding:20px;color:var(--text-muted);font-size:.82rem;"><i class="fas fa-info-circle" style="margin-right:5px;"></i>বিজয়ীর বিস্তারিত তথ্য শীঘ্রই আসবে</div>`;
+  }else{
+    const winnerEntries=Object.entries(winnersObj);
+    contentHtml+=`<div style="font-size:.72rem;font-weight:800;color:var(--text-secondary);margin-bottom:10px;text-transform:uppercase;letter-spacing:.5px;"><i class="fas fa-crown" style="color:var(--warn);margin-right:4px;"></i> বিজয়ীদের তালিকা (${winnerEntries.length})</div>`;
+    winnerEntries.forEach(([uid, data],i)=>{
+      const isMe = String(uid)===userId;
+      /* Get winner name: from winners data, or from participants, or fallback */
+      let name='User';
+      if(typeof data==='object' && data.name) name=data.name;
+      else if(typeof data==='object' && data.userName) name=data.userName;
+      else if(g.participants && g.participants[uid] && g.participants[uid].name) name=g.participants[uid].name;
+      else if(typeof data==='string') name=data;
+      
+      const prize=Number((typeof data==='object')?(data.prize||data.amount||perWinnerReward):perWinnerReward);
+      
+      contentHtml+=`<div class="winner-list-item" style="${isMe?'border-color:rgba(254,202,87,0.4);background:rgba(254,202,87,0.06);':''}">
+        <div class="winner-rank">${i+1}</div>
+        <div class="winner-name">${name}${isMe?' <span style="color:var(--warn);font-size:.65rem;">(আপনি)</span>':''}</div>
+        <div class="winner-prize">+${prize} ${sym}</div>
+      </div>`;
+    });
+  }
+  
+  document.getElementById('winnerResultsContent').innerHTML=contentHtml;
+  document.getElementById('winnerResultsModal').classList.add('show');
+}
+
+function closeWinnerModal(){
+  document.getElementById('winnerResultsModal').classList.remove('show');
+}
+
+/* ════════ ALL RESULTS MODAL ════════ */
+function showAllResults(){
+  const userId=String(tgUser.id);
+  const sym=getCurrencySymbol();
+  const contentEl=document.getElementById('allResultsContent');
+  
+  /* Filter giveaways user has joined */
+  const joinedGiveaways=[];
+  Object.entries(giveawayDataCache).forEach(([key, g])=>{
+    if(g.participants && g.participants[userId]){
+      joinedGiveaways.push({key, ...g});
+    }
+  });
+  
+  /* Sort by endTime descending */
+  joinedGiveaways.sort((a,b)=>(getGiveawayEndTime(b))-(getGiveawayEndTime(a)));
+  
+  if(joinedGiveaways.length===0){
+    contentEl.innerHTML='<div class="ar-empty"><i class="fas fa-gift"></i><p>আপনি কোনো গিভঅ্যাওয়েতে অংশ নেননি</p></div>';
+    document.getElementById('allResultsModal').classList.add('show');
+    return;
+  }
+  
+  let html='';
+  joinedGiveaways.forEach(g=>{
+    const totalPrize=Number(g.totalPrize||g.prize||g.prizeAmount||0);
+    
+    /* Use the unified status helper */
+    const userStatus = getUserGiveawayStatus(g, userId);
+    
+    /* Status badge */
+    let badgeHtml='';
+    let itemClass='';
+    if(userStatus.status==='won'){
+      badgeHtml=`<div class="ar-status-badge badge-won"><i class="fas fa-trophy"></i> WON</div>`;
+      itemClass='ar-won';
+    }else if(userStatus.status==='lost'){
+      badgeHtml=`<div class="ar-status-badge badge-lost"><i class="fas fa-times-circle"></i> NOT WON</div>`;
+      itemClass='ar-lost';
+    }else if(userStatus.status==='running'){
+      badgeHtml=`<div class="ar-status-badge badge-waiting"><i class="fas fa-play-circle"></i> RUNNING</div>`;
+      itemClass='ar-waiting';
+    }else{
+      badgeHtml=`<div class="ar-status-badge badge-waiting"><i class="fas fa-hourglass-half"></i> WAITING</div>`;
+      itemClass='ar-waiting';
+    }
+    
+    /* Join date */
+    const joinData=g.participants[userId];
+    const joinDate=joinData&&joinData.joinedAt?new Date(joinData.joinedAt).toLocaleDateString('en-GB',{day:'2-digit',month:'short',year:'numeric'}):'—';
+    
+    /* Result date */
+    let resultDate='—';
+    const endTime=getGiveawayEndTime(g);
+    const ended=endTime&&Date.now()>endTime;
+    if(ended && endTime){
+      resultDate=new Date(endTime).toLocaleDateString('en-GB',{day:'2-digit',month:'short',year:'numeric'});
+    }
+    
+    /* Prize display */
+    let prizeDisplay=totalPrize+' '+sym;
+    if(userStatus.status==='won'&&userStatus.amount>0){
+      prizeDisplay=`<span style="color:var(--accent);font-weight:800;">+${userStatus.amount} ${sym}</span>`;
+    }
+    
+    /* Status display text */
+    let statusText='চলমান';
+    if(userStatus.status==='won') statusText='জিতেছেন!';
+    else if(userStatus.status==='lost') statusText='জিতেননি';
+    else if(userStatus.status==='waiting') statusText='অপেক্ষায়';
+    else if(userStatus.status==='running') statusText='চলমান';
+    
+    html+=`<div class="ar-item ${itemClass}">
+      <div class="ar-top-row">
+        <div class="ar-title">${g.title||'Giveaway'}</div>
+        ${badgeHtml}
+      </div>
+      <div class="ar-details">
+        <div class="ar-detail-item">
+          <div class="ar-detail-label">Prize</div>
+          <div class="ar-detail-val val-warn">${prizeDisplay}</div>
+        </div>
+        <div class="ar-detail-item">
+          <div class="ar-detail-label">Status</div>
+          <div class="ar-detail-val">${statusText}</div>
+        </div>
+        <div class="ar-detail-item">
+          <div class="ar-detail-label">Join Date</div>
+          <div class="ar-detail-val">${joinDate}</div>
+        </div>
+        <div class="ar-detail-item">
+          <div class="ar-detail-label">Result Date</div>
+          <div class="ar-detail-val">${resultDate}</div>
+        </div>
+      </div>
+    </div>`;
+  });
+  
+  contentEl.innerHTML=html;
+  document.getElementById('allResultsModal').classList.add('show');
+}
+
+function closeAllResultsModal(){
+  document.getElementById('allResultsModal').classList.remove('show');
 }
 
 /* ════════ REFERRAL ════════ */
 function getRefLink(){return`https://t.me/${appState.config.botUsername||'bot'}/app?startapp=${appState.user.id}`;}
-function copyLink(){navigator.clipboard.writeText(getRefLink());toast('লিংক কপি হয়েছে!');}
+function copyLink(){navigator.clipboard.writeText(getRefLink());toast('✅ লিংক কপি হয়েছে!');}
 function shareLink(){const url=`https://t.me/share/url?url=${encodeURIComponent(getRefLink())}&text=Join%20Now!`;if(tg&&tg.openTelegramLink)tg.openTelegramLink(url);else window.open(url,'_blank');}
 function openTutorial(){if(appState.config.tutorialLink)window.open(appState.config.tutorialLink,'_blank');else toast('No tutorial available');}
 function openSupport(){if(appState.config.supportLink)window.open(appState.config.supportLink,'_blank');}
@@ -2458,7 +3087,6 @@ async function verifyChannelJoins(){
   else{toast('⚠️ সব চ্যানেলে জয়েন করুন');}
 }
 
-/* Auto recheck: every 60s check if user is still in channels */
 function startChannelRecheck(){
   if(channelRecheckInterval)clearInterval(channelRecheckInterval);
   channelRecheckInterval=setInterval(async()=>{
@@ -2481,7 +3109,7 @@ function showApp(){document.getElementById('app').style.display='block';const to
 function checkWithdrawEnabled(){const enabled=appState.config.withdrawEnabled!==false;const fw=document.getElementById('wd-form-wrap');const rb=document.getElementById('wd-ref-block');if(!enabled){if(fw)fw.style.display='none';if(rb)rb.style.display='none';}}
 
 /* ════════════════════════════════════════════════
-   MAIN INIT - FIX: Config listener triggers full re-render for sync
+   MAIN INIT
 ════════════════════════════════════════════════ */
 window.onload=()=>{
   document.getElementById('u-name').innerText=tgUser.first_name||'User';
@@ -2492,7 +3120,6 @@ window.onload=()=>{
   loaderStep(2,'ডেটা লোড হচ্ছে…');
   let configLoaded=false,userLoaded=false,userDataVal=null;
 
-  /* FIX: onConfigReady now triggers full UI update including games, ads, sell, giveaway */
   function onConfigReady(cfg){
     appState.config=cfg;
     preloadAds();
@@ -2500,11 +3127,9 @@ window.onload=()=>{
       updateTextElements();
       renderAds();
       renderTasks();
-      renderSellPage();
       renderWithdrawNotice();
       renderGamesPage();
       renderRefTasks();
-      /* Re-render giveaway if on that page */
       const giveawayPage=document.getElementById('page-giveaway');
       if(giveawayPage&&giveawayPage.classList.contains('active')){
         renderGiveawayPage();
@@ -2517,9 +3142,10 @@ window.onload=()=>{
     if(userDataVal&&userDataVal.isBanned){showBanScreen(userDataVal.banReason||'Suspended.');dismissLoader();return;}
     if(userDataVal&&userDataVal.lastActive!==today){userRef.update({dailyAds:{},lastActive:today});appState.user.dailyAds={};renderAds();}
     dismissLoader();checkChannelJoin();
+    loadHomeMiniLeaderboard();
+    startGameSettingsListener();
   }
 
-  /* FIX: Config uses real-time listener - any admin change auto-reflects */
   configRef.on('value',snap=>{if(!snap||!snap.exists()){configLoaded=true;tryBootApp();return;}onConfigReady(snap.val());if(!configLoaded){configLoaded=true;loaderStep(2,'কনফিগ লোড…');tryBootApp();}},()=>{configLoaded=true;tryBootApp();});
 
   userRef.once('value').then(async snap=>{
